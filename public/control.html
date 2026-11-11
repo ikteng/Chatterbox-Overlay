@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Chatterbox Overlay — Control Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js"></script>
+<style>
+  .icon { font-size: 15px; vertical-align: -3px; }
+  button .icon { margin-right: 5px; }
+  h3 .icon { font-size: 14px; }
+  :root {
+    color-scheme: dark;
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #262b35;
+    --text: #e8eaed;
+    --muted: #8b92a3;
+    --accent: #7c5cff;
+    --green: #3ddc84;
+    --red: #ff5c5c;
+    --yellow: #ffcc4d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 400px;
+    padding: 20px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    color: var(--muted);
+    border-radius: 7px;
+    padding: 8px 6px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .tab-btn.active {
+    background: var(--accent);
+    color: white;
+  }
+  .tab-panel { display: none; flex-direction: column; gap: 14px; }
+  .tab-panel.active { display: flex; }
+
+  .platform-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .platform-card h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .count-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1px 8px;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--muted);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .dot.connected { background: var(--green); }
+  .dot.error { background: var(--red); }
+  .dot.reconnecting { background: var(--yellow); }
+  input[type=text] {
+    width: 100%;
+    padding: 8px 10px;
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .row { display: flex; gap: 6px; }
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-connect { background: var(--accent); color: white; flex: 1; }
+  .btn-stop { background: #2a2e38; color: var(--text); }
+  .status-text { font-size: 11px; color: var(--muted); margin-top: 6px; min-height: 14px; }
+  .links {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+  }
+  .link-row { display: flex; gap: 6px; align-items: center; }
+  .link-row a {
+    color: var(--accent);
+    word-break: break-all;
+    flex: 1;
+    font-size: 11px;
+  }
+  .btn-copy {
+    background: #2a2e38;
+    color: var(--text);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .btn-copy.copied { background: var(--green); color: #0f1115; }
+  .btn-test-voice, .btn-preview-msg {
+    background: #2a2e38;
+    color: var(--text);
+  }
+  .btn-test-voice.playing, .btn-preview-msg.playing { background: var(--accent); color: white; }
+  .preview-frame {
+    width: 100%;
+    height: 220px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: repeating-conic-gradient(#1b1e26 0% 25%, #15171d 0% 50%) 50% / 20px 20px;
+    margin-top: 10px;
+  }
+  .settings-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .settings-card h3 { margin: 0 0 8px; font-size: 13px; }
+  .settings-card label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin: 10px 0 4px;
+  }
+  .settings-card label:first-of-type { margin-top: 0; }
+  .label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0 4px;
+  }
+  .label-row label { margin: 0; }
+  .label-row .btn-test-voice { padding: 3px 9px; font-size: 11px; }
+  .label-row .btn-test-voice .icon { margin-right: 4px; font-size: 13px; }
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 8px 10px;
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  select {
+    width: 100%;
+    padding: 7px 10px;
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .inline-opts { display: flex; gap: 8px; align-items: center; }
+  .inline-opts input[type=checkbox] { margin: 0; }
+  .inline-opts span { font-size: 12px; }
+  .btn-save { background: var(--accent); color: white; width: 100%; margin-top: 10px; }
+  .save-note { font-size: 11px; color: var(--green); margin-top: 6px; min-height: 14px; }
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  .chat-log {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .msg { font-size: 13px; line-height: 1.4; }
+  .msg .plat {
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+    font-weight: 700;
+  }
+  .plat.youtube { background: #ff0000; color: white; }
+  .plat.twitch { background: #9147ff; color: white; }
+  .plat.tiktok, .plat.douyin { background: #00f2ea; color: #111; }
+  .msg .author { font-weight: 700; margin-right: 4px; }
+</style>
+</head>
+<body>
+  <div class="sidebar">
+    <div>
+      <h1>Chatterbox Overlay</h1>
+      <div class="sub">Free unified chat for YouTube / Twitch / TikTok / Douyin. No API keys or login needed.</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="sources"><iconify-icon class="icon" icon="mdi:access-point"></iconify-icon><span class="btn-label">Sources</span></button>
+      <button class="tab-btn" data-tab="overlay"><iconify-icon class="icon" icon="mdi:monitor-screenshot"></iconify-icon><span class="btn-label">Overlay</span></button>
+      <button class="tab-btn" data-tab="filters"><iconify-icon class="icon" icon="mdi:filter-variant"></iconify-icon><span class="btn-label">Filters</span></button>
+    </div>
+
+    <div class="tab-panel active" data-tab="sources">
+      <div class="platform-card" data-platform="youtube">
+        <h3><span class="dot"></span> YouTube Live <span class="count-badge">0 msgs</span></h3>
+        <input type="text" placeholder="https://www.youtube.com/watch?v=..." data-url />
+        <div class="row">
+          <button class="btn-connect"><iconify-icon class="icon" icon="mdi:link-variant"></iconify-icon><span class="btn-label">Connect</span></button>
+          <button class="btn-stop"><iconify-icon class="icon" icon="mdi:stop"></iconify-icon><span class="btn-label">Stop</span></button>
+        </div>
+        <div class="status-text">Not connected</div>
+      </div>
+
+      <div class="platform-card" data-platform="twitch">
+        <h3><span class="dot"></span> Twitch <span class="count-badge">0 msgs</span></h3>
+        <input type="text" placeholder="https://www.twitch.tv/channelname" data-url />
+        <div class="row">
+          <button class="btn-connect"><iconify-icon class="icon" icon="mdi:link-variant"></iconify-icon><span class="btn-label">Connect</span></button>
+          <button class="btn-stop"><iconify-icon class="icon" icon="mdi:stop"></iconify-icon><span class="btn-label">Stop</span></button>
+        </div>
+        <div class="status-text">Not connected</div>
+      </div>
+
+      <div class="platform-card" data-platform="tiktok">
+        <h3><span class="dot"></span> TikTok / Douyin <span class="count-badge">0 msgs</span></h3>
+        <input type="text" placeholder="https://www.tiktok.com/@username/live" data-url />
+        <div class="row">
+          <button class="btn-connect"><iconify-icon class="icon" icon="mdi:link-variant"></iconify-icon><span class="btn-label">Connect</span></button>
+          <button class="btn-stop"><iconify-icon class="icon" icon="mdi:stop"></iconify-icon><span class="btn-label">Stop</span></button>
+        </div>
+        <div class="status-text">Not connected (best-effort)</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-tab="overlay">
+      <div class="settings-card">
+        <h3>Overlay settings</h3>
+
+        <label>Theme</label>
+        <select id="opt-theme">
+          <option value="bubble">Bubble (default)</option>
+          <option value="compact">Compact list</option>
+          <option value="minimal">Minimal (text only)</option>
+        </select>
+
+        <label>Max messages shown</label>
+        <input type="text" id="opt-max" value="20" />
+
+        <label>Auto-fade after (ms, 0 = never)</label>
+        <input type="text" id="opt-lifetime" value="0" />
+
+        <div class="inline-opts" style="margin-top:10px;">
+          <input type="checkbox" id="opt-tts" />
+          <span>Enable text-to-speech</span>
+        </div>
+
+        <div class="label-row">
+          <label>TTS voice</label>
+          <button class="btn-test-voice" id="btn-test-voice"><iconify-icon class="icon" icon="mdi:volume-high"></iconify-icon><span class="btn-label">Test voice</span></button>
+        </div>
+        <select id="opt-voice">
+          <option value="">Browser default (auto-match language)</option>
+        </select>
+
+        <label>TTS rate / pitch</label>
+        <div class="row">
+          <input type="text" id="opt-rate" value="1" />
+          <input type="text" id="opt-pitch" value="1" />
+        </div>
+
+        <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
+        <div class="save-note" id="save-note"></div>
+      </div>
+
+      <div class="links">
+        <div style="margin-bottom:6px;"><strong>OBS overlay (Browser Source):</strong></div>
+        <div class="link-row">
+          <a href="overlay.html" target="_blank" id="overlay-link"></a>
+          <button class="btn-copy" id="btn-copy-link"><iconify-icon class="icon" icon="mdi:content-copy"></iconify-icon><span class="btn-label">Copy</span></button>
+        </div>
+        <div style="margin-top:8px; color: var(--muted);">Add as a Browser Source in OBS. Enable "Control audio via OBS" if you turn on TTS. Settings are saved to the server, so this link also works without any query params — just save above.</div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn-preview-msg" id="btn-preview-msg" style="flex:1;"><iconify-icon class="icon" icon="mdi:play"></iconify-icon><span class="btn-label">Preview sample message</span></button>
+        </div>
+        <iframe class="preview-frame" id="preview-frame" src="overlay.html?preview=1"></iframe>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-tab="filters">
+      <div class="settings-card">
+        <h3>Filters (NG words / users)</h3>
+        <label>Blocked words (one per line, substring match)</label>
+        <textarea id="opt-ngwords"></textarea>
+
+        <label>Blocked usernames (one per line)</label>
+        <textarea id="opt-ngusers"></textarea>
+
+        <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
+        <div class="save-note" id="save-note-filters"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="chat-log" id="chat-log"></div>
+  </div>
+
+<script>
+  // ---- tabs ----
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`.tab-panel[data-tab="${btn.dataset.tab}"]`).classList.add('active');
+    });
+  });
+
+  // ---- overlay settings ----
+  const overlayLink = document.getElementById('overlay-link');
+  const previewFrame = document.getElementById('preview-frame');
+  const btnCopyLink = document.getElementById('btn-copy-link');
+
+  const optTheme = document.getElementById('opt-theme');
+  const optMax = document.getElementById('opt-max');
+  const optLifetime = document.getElementById('opt-lifetime');
+  const optTts = document.getElementById('opt-tts');
+  const optVoice = document.getElementById('opt-voice');
+  const optRate = document.getElementById('opt-rate');
+  const optPitch = document.getElementById('opt-pitch');
+  const optNgWords = document.getElementById('opt-ngwords');
+  const optNgUsers = document.getElementById('opt-ngusers');
+  const saveNote = document.getElementById('save-note');
+  const saveNoteFilters = document.getElementById('save-note-filters');
+
+  // Voice list comes from this browser's speechSynthesis — includes any
+  // offline OS voices plus online "Natural" voices Edge/Chrome expose.
+  let pendingVoiceName = '';
+  function populateVoices() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return;
+    const current = optVoice.value || pendingVoiceName;
+    optVoice.innerHTML = '<option value="">Browser default (auto-match language)</option>';
+    voices.forEach((v) => {
+      const option = document.createElement('option');
+      option.value = v.name;
+      option.textContent = `${v.name} (${v.lang})`;
+      optVoice.appendChild(option);
+    });
+    if (current) optVoice.value = current;
+  }
+  if ('speechSynthesis' in window) {
+    populateVoices();
+    window.speechSynthesis.onvoiceschanged = populateVoices;
+  }
+
+  function currentOverlaySettings() {
+    return {
+      theme: optTheme.value,
+      max: parseInt(optMax.value, 10) || 20,
+      lifetime: parseInt(optLifetime.value, 10) || 0,
+      tts: optTts.checked,
+      voiceName: optVoice.value,
+      voiceRate: parseFloat(optRate.value) || 1,
+      voicePitch: parseFloat(optPitch.value) || 1,
+    };
+  }
+
+  function rebuildOverlayLink() {
+    // Saved settings are the source of truth for the plain link; query params
+    // are only for per-browser-source overrides, so the base link stays clean.
+    const url = location.origin + '/overlay.html';
+    overlayLink.href = url;
+    overlayLink.textContent = url;
+  }
+  rebuildOverlayLink();
+
+  btnCopyLink.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(overlayLink.href);
+    } catch {
+      // clipboard API unavailable (e.g. insecure context) — fall back to selecting the link text
+      const range = document.createRange();
+      range.selectNode(overlayLink);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    }
+    const copyLabel = btnCopyLink.querySelector('.btn-label');
+    const copyIcon = btnCopyLink.querySelector('.icon');
+    copyLabel.textContent = 'Copied!';
+    copyIcon.setAttribute('icon', 'mdi:check');
+    btnCopyLink.classList.add('copied');
+    setTimeout(() => {
+      copyLabel.textContent = 'Copy';
+      copyIcon.setAttribute('icon', 'mdi:content-copy');
+      btnCopyLink.classList.remove('copied');
+    }, 1500);
+  });
+
+  // ---- test voice (speaks right here in the control panel, using unsaved values) ----
+  const btnTestVoice = document.getElementById('btn-test-voice');
+  btnTestVoice.addEventListener('click', () => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const cfg = currentOverlaySettings();
+    const utter = new SpeechSynthesisUtterance('This is a test of the chat overlay voice, rate, and pitch.');
+    utter.rate = cfg.voiceRate;
+    utter.pitch = cfg.voicePitch;
+    if (cfg.voiceName) {
+      const match = window.speechSynthesis.getVoices().find((v) => v.name === cfg.voiceName);
+      if (match) utter.voice = match;
+    }
+    btnTestVoice.classList.add('playing');
+    utter.onend = utter.onerror = () => btnTestVoice.classList.remove('playing');
+    window.speechSynthesis.speak(utter);
+  });
+
+  // ---- preview sample messages (pushes fake messages into the preview iframe's overlay) ----
+  const btnPreviewMsg = document.getElementById('btn-preview-msg');
+  const SAMPLE_MESSAGES = [
+    { platform: 'twitch', author: 'StreamFan22', message: 'This overlay looks great! 🎉', color: '#ff9ac1' },
+    { platform: 'youtube', author: '李明', message: '你好,主播!加油!', color: '#5bc9ff' },
+    { platform: 'tiktok', author: 'xiao_hui', message: 'first time here, loving the stream', color: '#ffd56b' },
+    { platform: 'youtube', author: 'BigDonor', message: 'Keep up the great content!', color: '#8fffb0', isPaid: true },
+    { platform: 'twitch', author: 'night_owl', message: 'lol that was close', color: '#c6a6ff' },
+    { platform: 'douyin', author: '小美', message: '主播声音好好听', color: '#5fe8e2' },
+  ];
+  let sampleIndex = 0;
+  function pushSampleMessage() {
+    const frameWin = previewFrame.contentWindow;
+    if (!frameWin || typeof frameWin.previewMessage !== 'function') return;
+    const msg = SAMPLE_MESSAGES[sampleIndex % SAMPLE_MESSAGES.length];
+    sampleIndex++;
+    frameWin.previewMessage({ ...msg, id: 'preview-' + Date.now() });
+  }
+
+  btnPreviewMsg.addEventListener('click', () => {
+    pushSampleMessage();
+    btnPreviewMsg.classList.add('playing');
+    setTimeout(() => btnPreviewMsg.classList.remove('playing'), 400);
+  });
+
+  // Auto-loop: continuously feeds sample messages into the preview so the OBS
+  // overlay preview always shows something moving, without needing clicks.
+  let previewLoopTimer = null;
+  function startPreviewLoop() {
+    if (previewLoopTimer) clearInterval(previewLoopTimer);
+    sampleIndex = 0;
+    pushSampleMessage();
+    previewLoopTimer = setInterval(pushSampleMessage, 2800);
+  }
+
+  previewFrame.addEventListener('load', () => {
+    // Push the panel's current unsaved overlay settings into the preview so
+    // it reflects what's on screen right now, not just the last saved config.
+    const frameWin = previewFrame.contentWindow;
+    if (frameWin && typeof frameWin.applyPreviewConfig === 'function') {
+      frameWin.applyPreviewConfig(currentOverlaySettings());
+    }
+    startPreviewLoop();
+  });
+
+  [optTheme, optMax, optLifetime, optTts, optVoice, optRate, optPitch].forEach((el) => {
+    el.addEventListener('input', () => {
+      const frameWin = previewFrame.contentWindow;
+      if (frameWin && typeof frameWin.applyPreviewConfig === 'function') {
+        frameWin.applyPreviewConfig(currentOverlaySettings());
+      }
+    });
+    el.addEventListener('change', () => {
+      const frameWin = previewFrame.contentWindow;
+      if (frameWin && typeof frameWin.applyPreviewConfig === 'function') {
+        frameWin.applyPreviewConfig(currentOverlaySettings());
+      }
+    });
+  });
+
+  async function loadSettings() {
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    optNgWords.value = (data.ngWords || []).join('\n');
+    optNgUsers.value = (data.ngUsers || []).join('\n');
+    const o = data.overlay || {};
+    optTheme.value = o.theme || 'bubble';
+    optMax.value = o.max != null ? o.max : 20;
+    optLifetime.value = o.lifetime != null ? o.lifetime : 0;
+    optTts.checked = !!o.tts;
+    pendingVoiceName = o.voiceName || '';
+    if (pendingVoiceName) optVoice.value = pendingVoiceName;
+    optRate.value = o.voiceRate != null ? o.voiceRate : 1;
+    optPitch.value = o.voicePitch != null ? o.voicePitch : 1;
+  }
+  loadSettings();
+
+  async function saveSettings(note) {
+    const ngWords = optNgWords.value.split('\n').map(s => s.trim()).filter(Boolean);
+    const ngUsers = optNgUsers.value.split('\n').map(s => s.trim()).filter(Boolean);
+    await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ngWords, ngUsers, overlay: currentOverlaySettings() })
+    });
+    note.textContent = 'Saved.';
+    setTimeout(() => { note.textContent = ''; }, 2000);
+    previewFrame.src = previewFrame.src; // reload preview to reflect saved settings
+  }
+
+  document.querySelectorAll('.btn-save').forEach(btn => {
+    btn.addEventListener('click', () => saveSettings(btn.closest('.tab-panel').querySelector('.save-note')));
+  });
+
+  // ---- platform cards ----
+  const cards = document.querySelectorAll('.platform-card');
+  cards.forEach(card => {
+    const platform = card.dataset.platform;
+    const urlInput = card.querySelector('[data-url]');
+    const connectBtn = card.querySelector('.btn-connect');
+    const stopBtn = card.querySelector('.btn-stop');
+    const statusText = card.querySelector('.status-text');
+    const dot = card.querySelector('.dot');
+
+    connectBtn.addEventListener('click', async () => {
+      const url = urlInput.value.trim();
+      if (!url) return;
+      statusText.textContent = 'Connecting...';
+      const res = await fetch('/api/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform, url })
+      });
+      const data = await res.json();
+      if (data.error) statusText.textContent = 'Error: ' + data.error;
+    });
+
+    stopBtn.addEventListener('click', async () => {
+      await fetch('/api/disconnect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform })
+      });
+      dot.className = 'dot';
+      statusText.textContent = 'Not connected';
+      const badge = card.querySelector('.count-badge');
+      if (badge) badge.textContent = '0 msgs';
+    });
+  });
+
+  function updateStatus(platform, status, text) {
+    const card = document.querySelector(`.platform-card[data-platform="${platform}"]`);
+    if (!card) return;
+    const dot = card.querySelector('.dot');
+    const statusText = card.querySelector('.status-text');
+    dot.className = 'dot ' + status;
+    statusText.textContent = text;
+    if (status === 'stopped') {
+      const badge = card.querySelector('.count-badge');
+      if (badge) badge.textContent = '0 msgs';
+    }
+  }
+
+  function updateCount(platform, count) {
+    const card = document.querySelector(`.platform-card[data-platform="${platform}"]`);
+    if (!card) return;
+    const badge = card.querySelector('.count-badge');
+    if (badge) badge.textContent = count + (count === 1 ? ' msg' : ' msgs');
+  }
+
+  // ---- chat log ----
+  const chatLog = document.getElementById('chat-log');
+  function appendMessage(msg) {
+    const div = document.createElement('div');
+    div.className = 'msg';
+    const platSpan = document.createElement('span');
+    platSpan.className = 'plat ' + msg.platform;
+    platSpan.textContent = msg.platform;
+    const authorSpan = document.createElement('span');
+    authorSpan.className = 'author';
+    authorSpan.style.color = msg.color || '#ffffff';
+    authorSpan.textContent = msg.author + ':';
+    const textSpan = document.createElement('span');
+    textSpan.textContent = ' ' + msg.message;
+    div.appendChild(platSpan);
+    div.appendChild(authorSpan);
+    div.appendChild(textSpan);
+    chatLog.appendChild(div);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    while (chatLog.children.length > 300) chatLog.removeChild(chatLog.firstChild);
+  }
+
+  function connectWs() {
+    const ws = new WebSocket(`ws://${location.host}/ws`);
+    ws.onmessage = (ev) => {
+      const data = JSON.parse(ev.data);
+      if (data.type === 'chat') {
+        appendMessage(data.message);
+        updateCount(data.message.platform, data.count);
+      } else if (data.type === 'status') {
+        updateStatus(data.platform, data.status, data.text);
+      }
+    };
+    ws.onclose = () => setTimeout(connectWs, 2000);
+  }
+  connectWs();
+</script>
+</body>
+</html>

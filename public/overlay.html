@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Chatterbox Overlay</title>
+<style>
+  html, body {
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  #feed {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    gap: 6px;
+    box-sizing: border-box;
+  }
+  .msg {
+    background: rgba(10, 10, 14, 0.72);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 20px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    line-height: 1.35;
+    animation: slidein 0.25s ease-out;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  @keyframes slidein {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg.fade-out {
+    animation: fadeout 0.6s ease forwards;
+  }
+  @keyframes fadeout {
+    to { opacity: 0; transform: translateY(-8px); }
+  }
+  .plat {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 5px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .plat.youtube { background: #ff0000; color: #fff; }
+  .plat.twitch { background: #9147ff; color: #fff; }
+  .plat.tiktok, .plat.douyin { background: #00f2ea; color: #111; }
+  .author { font-weight: 800; margin-right: 4px; }
+  .badge-paid {
+    background: #ffcc4d;
+    color: #111;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 5px;
+    margin-right: 6px;
+  }
+
+  /* --- theme: bubble (default, see .msg above) --- */
+
+  /* --- theme: compact --- */
+  #feed.theme-compact {
+    gap: 2px;
+  }
+  #feed.theme-compact .msg {
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  #feed.theme-compact .plat {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* --- theme: minimal (no background, just text + shadow) --- */
+  #feed.theme-minimal {
+    gap: 8px;
+  }
+  #feed.theme-minimal .msg {
+    background: transparent;
+    padding: 0 4px;
+    font-size: 22px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.6);
+  }
+  #feed.theme-minimal .plat {
+    background: transparent;
+    padding: 0;
+    margin-right: 6px;
+    font-weight: 900;
+  }
+  #feed.theme-minimal .plat.youtube { color: #ff5c5c; }
+  #feed.theme-minimal .plat.twitch { color: #b38bff; }
+  #feed.theme-minimal .plat.tiktok, #feed.theme-minimal .plat.douyin { color: #5fe8e2; }
+</style>
+</head>
+<body>
+<div id="feed"></div>
+
+<script>
+  // Settings come from the server (set via the control panel) by default.
+  // Any URL query param overrides the server value for this browser source only,
+  // e.g. overlay.html?tts=1&max=25&voiceRate=1.1
+  const params = new URLSearchParams(location.search);
+  const feed = document.getElementById('feed');
+  let cfg = { theme: 'bubble', max: 20, lifetime: 0, tts: false, voiceName: '', voiceRate: 1, voicePitch: 1 };
+
+  function applyOverrides(base) {
+    return {
+      theme: params.get('theme') || base.theme,
+      max: params.has('max') ? parseInt(params.get('max'), 10) : base.max,
+      lifetime: params.has('lifetime') ? parseInt(params.get('lifetime'), 10) : base.lifetime,
+      tts: params.has('tts') ? params.get('tts') === '1' : base.tts,
+      voiceName: params.has('voiceName') ? params.get('voiceName') : base.voiceName,
+      voiceRate: params.has('voiceRate') ? parseFloat(params.get('voiceRate')) : base.voiceRate,
+      voicePitch: params.has('voicePitch') ? parseFloat(params.get('voicePitch')) : base.voicePitch,
+    };
+  }
+
+  let voices = [];
+  function loadVoices() { voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : []; }
+  if ('speechSynthesis' in window) {
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  function applyTheme() {
+    feed.className = '';
+    if (cfg.theme !== 'bubble') feed.classList.add('theme-' + cfg.theme);
+  }
+
+  async function loadConfig() {
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      cfg = applyOverrides(data.overlay || cfg);
+    } catch {
+      cfg = applyOverrides(cfg);
+    }
+    applyTheme();
+  }
+
+  function escapeForSpeech(text) {
+    return text.replace(/https?:\/\/\S+/g, '').trim();
+  }
+
+  function speak(author, text) {
+    if (!cfg.tts || !('speechSynthesis' in window)) return;
+    const clean = escapeForSpeech(text);
+    if (!clean) return;
+    const utter = new SpeechSynthesisUtterance(`${author} says: ${clean}`);
+    utter.rate = cfg.voiceRate;
+    utter.pitch = cfg.voicePitch;
+    if (cfg.voiceName) {
+      const match = voices.find((v) => v.name === cfg.voiceName);
+      if (match) utter.voice = match;
+    }
+    window.speechSynthesis.speak(utter);
+  }
+
+  function appendMessage(msg) {
+    const div = document.createElement('div');
+    div.className = 'msg';
+
+    const platSpan = document.createElement('span');
+    platSpan.className = 'plat ' + msg.platform;
+    platSpan.textContent = msg.platform;
+    div.appendChild(platSpan);
+
+    if (msg.isPaid) {
+      const paidSpan = document.createElement('span');
+      paidSpan.className = 'badge-paid';
+      paidSpan.textContent = '$';
+      div.appendChild(paidSpan);
+    }
+
+    const authorSpan = document.createElement('span');
+    authorSpan.className = 'author';
+    authorSpan.style.color = msg.color || '#ffd56b';
+    authorSpan.textContent = msg.author;
+    div.appendChild(authorSpan);
+
+    const textSpan = document.createElement('span');
+    textSpan.textContent = msg.message;
+    div.appendChild(textSpan);
+
+    feed.appendChild(div);
+    while (feed.children.length > cfg.max) {
+      feed.removeChild(feed.firstChild);
+    }
+
+    if (cfg.lifetime > 0) {
+      setTimeout(() => {
+        div.classList.add('fade-out');
+        setTimeout(() => div.remove(), 650);
+      }, cfg.lifetime);
+    }
+
+    speak(msg.author, msg.message);
+  }
+
+  function connectWs() {
+    const ws = new WebSocket(`ws://${location.host}/ws`);
+    ws.onmessage = (ev) => {
+      const data = JSON.parse(ev.data);
+      if (data.type === 'chat') appendMessage(data.message);
+      else if (data.type === 'settings') { cfg = applyOverrides(data.overlay); applyTheme(); }
+    };
+    ws.onclose = () => setTimeout(connectWs, 2000);
+  }
+
+  const isPreview = params.get('preview') === '1';
+
+  if (isPreview) {
+    // Embedded by the control panel's live preview iframe — no real chat
+    // connection, just a sandbox the panel can push settings/sample messages into.
+    window.applyPreviewConfig = (overlay) => {
+      cfg = { ...cfg, ...overlay };
+      applyTheme();
+    };
+    window.previewMessage = (msg) => appendMessage(msg);
+    applyTheme();
+  } else {
+    loadConfig().then(connectWs);
+  }
+</script>
+</body>
+</html>

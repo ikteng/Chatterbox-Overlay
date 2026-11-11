@@ -1,0 +1,14 @@
+{
+  "name": "chatterbox-overlay",
+  "version": "1.0.0",
+  "description": "Chatterbox Overlay — free unified chat overlay for YouTube, Twitch, and TikTok/Douyin live streams. No API keys or login required.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0",
+    "node-fetch": "^2.7.0"
+  }
+}
