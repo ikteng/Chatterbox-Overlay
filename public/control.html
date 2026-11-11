@@ -145,10 +145,11 @@
     white-space: nowrap;
   }
   .btn-copy.copied { background: var(--green); color: #0f1115; }
-  .btn-test-voice {
+  .btn-test-voice, .btn-import, .btn-export {
     background: #2a2e38;
     color: var(--text);
   }
+  .btn-import, .btn-export { flex: 1; }
   .btn-test-voice.playing { background: var(--accent); color: white; }
   .preview-frame {
     width: 100%;
@@ -250,7 +251,9 @@
     .btn-stop .btn-label,
     .btn-save .btn-label,
     .btn-copy .btn-label,
-    .btn-test-voice .btn-label {
+    .btn-test-voice .btn-label,
+    .btn-import .btn-label,
+    .btn-export .btn-label {
       display: inline;
       margin-left: 5px;
     }
@@ -372,9 +375,18 @@
         <h3>Filters (NG words / users)</h3>
         <label>Blocked words (one per line, substring match)</label>
         <textarea id="opt-ngwords"></textarea>
+        <div class="row" style="margin-top:6px;">
+          <button class="btn-import" data-target="ngwords"><iconify-icon class="icon" icon="mdi:file-upload-outline"></iconify-icon><span class="btn-label">Import .txt</span></button>
+          <button class="btn-export" data-target="ngwords"><iconify-icon class="icon" icon="mdi:file-download-outline"></iconify-icon><span class="btn-label">Export .txt</span></button>
+        </div>
 
         <label>Blocked usernames (one per line)</label>
         <textarea id="opt-ngusers"></textarea>
+        <div class="row" style="margin-top:6px;">
+          <button class="btn-import" data-target="ngusers"><iconify-icon class="icon" icon="mdi:file-upload-outline"></iconify-icon><span class="btn-label">Import .txt</span></button>
+          <button class="btn-export" data-target="ngusers"><iconify-icon class="icon" icon="mdi:file-download-outline"></iconify-icon><span class="btn-label">Export .txt</span></button>
+        </div>
+        <input type="file" id="file-import" accept=".txt,text/plain" style="display:none;" />
 
         <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
         <div class="save-note" id="save-note-filters"></div>
@@ -413,6 +425,49 @@
   const optNgUsers = document.getElementById('opt-ngusers');
   const saveNote = document.getElementById('save-note');
   const saveNoteFilters = document.getElementById('save-note-filters');
+
+  const fileImportInput = document.getElementById('file-import');
+  const filterTextareas = { ngwords: optNgWords, ngusers: optNgUsers };
+  let importTarget = '';
+
+  document.querySelectorAll('.btn-import').forEach(btn => {
+    btn.addEventListener('click', () => {
+      importTarget = btn.dataset.target;
+      fileImportInput.click();
+    });
+  });
+
+  fileImportInput.addEventListener('change', () => {
+    const file = fileImportInput.files[0];
+    const textarea = filterTextareas[importTarget];
+    if (!file || !textarea) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const existing = textarea.value.split('\n').map(s => s.trim()).filter(Boolean);
+      const imported = String(reader.result).split('\n').map(s => s.trim()).filter(Boolean);
+      const merged = Array.from(new Set([...existing, ...imported]));
+      textarea.value = merged.join('\n');
+    };
+    reader.readAsText(file);
+    fileImportInput.value = '';
+  });
+
+  document.querySelectorAll('.btn-export').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      const textarea = filterTextareas[target];
+      if (!textarea) return;
+      const blob = new Blob([textarea.value], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${target}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  });
 
   // Voice list comes from this browser's speechSynthesis — includes any
   // offline OS voices plus online "Natural" voices Edge/Chrome expose.
