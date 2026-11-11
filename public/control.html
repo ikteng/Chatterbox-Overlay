@@ -31,12 +31,14 @@
   }
   .sidebar {
     width: 400px;
+    flex-shrink: 0;
     padding: 20px;
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     gap: 16px;
     overflow-y: auto;
+    max-height: 100vh;
   }
   h1 { font-size: 18px; margin: 0 0 4px; }
   .sub { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
@@ -129,7 +131,7 @@
     padding: 12px;
     font-size: 12px;
   }
-  .link-row { display: flex; gap: 6px; align-items: center; }
+  .link-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .link-row a {
     color: var(--accent);
     word-break: break-all;
@@ -210,6 +212,8 @@
     display: flex;
     flex-direction: column;
     padding: 20px;
+    min-width: 0;
+    min-height: 0;
   }
   .chat-log {
     flex: 1;
@@ -221,6 +225,37 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-height: 200px;
+  }
+
+  @media (max-width: 860px) {
+    body { flex-direction: column; }
+    .sidebar {
+      width: 100%;
+      max-height: none;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .main { padding: 16px; }
+    .chat-log { min-height: 320px; }
+  }
+
+  @media (max-width: 480px) {
+    .sidebar { padding: 14px; }
+    .main { padding: 12px; }
+    .tab-btn .btn-label { display: none; }
+    .tab-btn .icon { font-size: 18px; margin: 0; }
+    button .icon { margin-right: 0; }
+    .btn-connect .btn-label,
+    .btn-stop .btn-label,
+    .btn-save .btn-label,
+    .btn-copy .btn-label,
+    .btn-test-voice .btn-label,
+    .btn-preview-msg .btn-label {
+      display: inline;
+      margin-left: 5px;
+    }
+    .row { flex-wrap: wrap; }
   }
   .msg { font-size: 13px; line-height: 1.4; }
   .msg .plat {
