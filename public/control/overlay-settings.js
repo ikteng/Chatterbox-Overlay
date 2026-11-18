@@ -4,7 +4,16 @@ const previewFrame = document.getElementById('preview-frame');
 const previewFrames = [previewFrame];
 const btnCopyLink = document.getElementById('btn-copy-link');
 
-const optTheme = document.getElementById('opt-theme');
+const themeGallery = document.getElementById('theme-gallery');
+const optBgColor = document.getElementById('opt-bg-color');
+const optBgOpacity = document.getElementById('opt-bg-opacity');
+const optTextColor = document.getElementById('opt-text-color');
+const optFontSize = document.getElementById('opt-font-size');
+const valBgColor = document.getElementById('val-bg-color');
+const valBgOpacity = document.getElementById('val-bg-opacity');
+const valTextColor = document.getElementById('val-text-color');
+const valFontSize = document.getElementById('val-font-size');
+const btnResetBubble = document.getElementById('btn-reset-bubble');
 const optMax = document.getElementById('opt-max');
 const optLifetime = document.getElementById('opt-lifetime');
 const optTts = document.getElementById('opt-tts');
@@ -13,15 +22,32 @@ const optRate = document.getElementById('opt-rate');
 const optNgWords = document.getElementById('opt-ngwords');
 const optNgUsers = document.getElementById('opt-ngusers');
 const saveNote = document.getElementById('save-note');
+const saveNoteDesign = document.getElementById('save-note-design');
 const saveNoteFilters = document.getElementById('save-note-filters');
 
 const BUBBLE_DEFAULTS = { bgColor: '#0a0a0e', bgOpacity: 0.72, textColor: '#ffffff', fontSize: 20 };
 
+let currentTheme = 'bubble';
 let currentBubble = { ...BUBBLE_DEFAULTS };
 
 function currentBubbleSettings() {
   return currentBubble;
 }
+
+// ---- theme gallery ----
+function setActiveThemeCard() {
+  themeGallery.querySelectorAll('.theme-card-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+  });
+}
+
+themeGallery.querySelectorAll('.theme-card-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    currentTheme = btn.dataset.theme;
+    setActiveThemeCard();
+    pushPreview();
+  });
+});
 
 // Voice list comes from this browser's speechSynthesis — includes any
 // offline OS voices plus online "Natural" voices Edge/Chrome expose.
@@ -47,7 +73,7 @@ if ('speechSynthesis' in window) {
 
 function currentOverlaySettings() {
   return {
-    theme: optTheme.value,
+    theme: currentTheme,
     max: parseInt(optMax.value, 10) || 20,
     lifetime: parseInt(optLifetime.value, 10) || 0,
     tts: optTts.checked,
@@ -159,9 +185,39 @@ previewFrames.forEach((frame) => {
   });
 });
 
-[optTheme, optMax, optLifetime, optTts, optVoice, optRate].forEach((el) => {
+[optMax, optLifetime, optTts, optVoice, optRate].forEach((el) => {
   el.addEventListener('input', pushPreview);
   el.addEventListener('change', pushPreview);
+});
+
+function updateBubbleValueLabels() {
+  valBgColor.textContent = optBgColor.value;
+  valBgOpacity.textContent = Math.round(parseFloat(optBgOpacity.value) * 100) + '%';
+  valTextColor.textContent = optTextColor.value;
+  valFontSize.textContent = optFontSize.value + 'px';
+}
+
+[optBgColor, optBgOpacity, optTextColor, optFontSize].forEach((el) => {
+  el.addEventListener('input', () => {
+    currentBubble = {
+      bgColor: optBgColor.value,
+      bgOpacity: parseFloat(optBgOpacity.value),
+      textColor: optTextColor.value,
+      fontSize: parseInt(optFontSize.value, 10),
+    };
+    updateBubbleValueLabels();
+    pushPreview();
+  });
+});
+
+btnResetBubble.addEventListener('click', () => {
+  currentBubble = { ...BUBBLE_DEFAULTS };
+  optBgColor.value = currentBubble.bgColor;
+  optBgOpacity.value = currentBubble.bgOpacity;
+  optTextColor.value = currentBubble.textColor;
+  optFontSize.value = currentBubble.fontSize;
+  updateBubbleValueLabels();
+  pushPreview();
 });
 
 async function loadSettings() {
@@ -170,7 +226,8 @@ async function loadSettings() {
   optNgWords.value = (data.ngWords || []).join('\n');
   optNgUsers.value = (data.ngUsers || []).join('\n');
   const o = data.overlay || {};
-  optTheme.value = o.theme || 'bubble';
+  currentTheme = o.theme || 'bubble';
+  setActiveThemeCard();
   optMax.value = o.max != null ? o.max : 20;
   optLifetime.value = o.lifetime != null ? o.lifetime : 0;
   optTts.checked = !!o.tts;
@@ -184,6 +241,11 @@ async function loadSettings() {
     textColor: b.textColor || BUBBLE_DEFAULTS.textColor,
     fontSize: b.fontSize || BUBBLE_DEFAULTS.fontSize,
   };
+  optBgColor.value = currentBubble.bgColor;
+  optBgOpacity.value = currentBubble.bgOpacity;
+  optTextColor.value = currentBubble.textColor;
+  optFontSize.value = currentBubble.fontSize;
+  updateBubbleValueLabels();
   pushPreview();
 }
 loadSettings();

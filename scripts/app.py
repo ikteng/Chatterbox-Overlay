@@ -153,7 +153,7 @@ def main():
 
     if getattr(sys, "frozen", False):
         import webview
-        webview.create_window("Chatterbox Overlay", url, width=800, height=600)
+        webview.create_window("Chatterbox Overlay", url, width=1000, height=700)
         webview.start()
         os._exit(0)
     else:

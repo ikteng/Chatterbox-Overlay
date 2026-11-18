@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="layout.css" />
 <link rel="stylesheet" href="platform-cards.css" />
 <link rel="stylesheet" href="settings.css" />
+<link rel="stylesheet" href="theme-gallery.css" />
 <link rel="stylesheet" href="chat-log.css" />
 <link rel="stylesheet" href="responsive.css" />
 </head>
@@ -29,6 +30,7 @@
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="sources"><iconify-icon class="icon" icon="mdi:access-point"></iconify-icon><span class="btn-label">Sources</span></button>
+      <button class="tab-btn" data-tab="design"><iconify-icon class="icon" icon="mdi:palette-swatch"></iconify-icon><span class="btn-label">Design</span></button>
       <button class="tab-btn" data-tab="overlay"><iconify-icon class="icon" icon="mdi:monitor-screenshot"></iconify-icon><span class="btn-label">Overlay</span></button>
       <button class="tab-btn" data-tab="filters"><iconify-icon class="icon" icon="mdi:filter-variant"></iconify-icon><span class="btn-label">Filters</span></button>
     </div>
@@ -65,16 +67,79 @@
       </div>
     </div>
 
+    <div class="tab-panel" data-tab="design">
+      <div class="theme-gallery" id="theme-gallery">
+        <button class="theme-card-btn" data-theme="bubble">
+          <span class="theme-card-swatch theme-swatch-bubble"><span></span><span></span></span>
+          <span class="theme-card-name">Bubble</span>
+        </button>
+        <button class="theme-card-btn" data-theme="compact">
+          <span class="theme-card-swatch theme-swatch-compact"><span></span><span></span><span></span></span>
+          <span class="theme-card-name">Compact</span>
+        </button>
+        <button class="theme-card-btn" data-theme="minimal">
+          <span class="theme-card-swatch theme-swatch-minimal"><span></span><span></span></span>
+          <span class="theme-card-name">Minimal</span>
+        </button>
+        <button class="theme-card-btn" data-theme="card">
+          <span class="theme-card-swatch theme-swatch-card"><span></span><span></span></span>
+          <span class="theme-card-name">Card</span>
+        </button>
+        <button class="theme-card-btn" data-theme="neon">
+          <span class="theme-card-swatch theme-swatch-neon"><span></span><span></span></span>
+          <span class="theme-card-name">Neon</span>
+        </button>
+        <button class="theme-card-btn" data-theme="terminal">
+          <span class="theme-card-swatch theme-swatch-terminal"><span></span><span></span></span>
+          <span class="theme-card-name">Terminal</span>
+        </button>
+      </div>
+
+      <iframe class="preview-frame" id="preview-frame" src="../overlay/overlay.html?preview=1"></iframe>
+
+      <div class="settings-card">
+        <h3>Bubble colors</h3>
+
+        <div class="label-row">
+          <label>Background color</label>
+          <span class="opt-value" id="val-bg-color">#0a0a0e</span>
+        </div>
+        <div class="color-row">
+          <input type="color" id="opt-bg-color" value="#0a0a0e" />
+        </div>
+
+        <div class="label-row">
+          <label>Background opacity</label>
+          <span class="opt-value" id="val-bg-opacity">72%</span>
+        </div>
+        <input type="range" id="opt-bg-opacity" min="0" max="1" step="0.01" value="0.72" />
+
+        <div class="label-row">
+          <label>Text color</label>
+          <span class="opt-value" id="val-text-color">#ffffff</span>
+        </div>
+        <div class="color-row">
+          <input type="color" id="opt-text-color" value="#ffffff" />
+        </div>
+
+        <div class="label-row">
+          <label>Font size</label>
+          <span class="opt-value" id="val-font-size">20px</span>
+        </div>
+        <input type="range" id="opt-font-size" min="10" max="48" step="1" value="20" />
+
+        <div class="row" style="margin-top:10px;">
+          <button class="btn-reset-bubble" id="btn-reset-bubble"><iconify-icon class="icon" icon="mdi:restore"></iconify-icon><span class="btn-label">Reset to default</span></button>
+        </div>
+
+        <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
+        <div class="save-note" id="save-note-design"></div>
+      </div>
+    </div>
+
     <div class="tab-panel" data-tab="overlay">
       <div class="settings-card">
         <h3>Overlay settings</h3>
-
-        <label>Theme</label>
-        <select id="opt-theme">
-          <option value="bubble">Bubble (default)</option>
-          <option value="compact">Compact list</option>
-          <option value="minimal">Minimal (text only)</option>
-        </select>
 
         <label>Max messages shown</label>
         <input type="text" id="opt-max" value="20" />
@@ -118,7 +183,6 @@
           <button class="btn-copy" id="btn-copy-link"><iconify-icon class="icon" icon="mdi:content-copy"></iconify-icon><span class="btn-label">Copy</span></button>
         </div>
         <div style="margin-top:8px; color: var(--muted);">Add as a Browser Source in OBS. Enable "Control audio via OBS" if you turn on TTS. Settings are saved to the server, so this link also works without any query params — just save above.</div>
-        <iframe class="preview-frame" id="preview-frame" src="../overlay/overlay.html?preview=1"></iframe>
       </div>
     </div>
 

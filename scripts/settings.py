@@ -64,7 +64,7 @@ def sanitize_overlay(o):
     theme = o.get("theme")
     voice_name = o.get("voiceName")
     return {
-        "theme": theme if theme in ("bubble", "compact", "minimal") else base["theme"],
+        "theme": theme if theme in ("bubble", "compact", "minimal", "card", "neon", "terminal") else base["theme"],
         "max": max(1, min(100, int(max_val))) if max_val is not None else base["max"],
         "lifetime": max(0, lifetime) if lifetime is not None else base["lifetime"],
         "tts": bool(o.get("tts")),
