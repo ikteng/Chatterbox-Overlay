@@ -1,0 +1,60 @@
+  .links {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+  }
+  .link-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .link-row a {
+    color: var(--accent);
+    word-break: break-all;
+    flex: 1;
+    font-size: 11px;
+  }
+  .btn-copy {
+    background: var(--accent);
+    color: white;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .btn-copy.copied { background: var(--accent); color: white; }
+  .btn-test-voice, .btn-import, .btn-export {
+    background: #2a2e38;
+    color: var(--text);
+  }
+  .btn-import, .btn-export { flex: 1; }
+  .btn-test-voice.playing { background: var(--accent); color: white; }
+  .preview-frame {
+    width: 100%;
+    height: 220px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: repeating-conic-gradient(#1b1e26 0% 25%, #15171d 0% 50%) 50% / 20px 20px;
+    margin-top: 10px;
+  }
+  .settings-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .settings-card h3 { margin: 0 0 8px; font-size: 13px; }
+  .settings-card label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin: 10px 0 4px;
+  }
+  .settings-card label:first-of-type { margin-top: 0; }
+  .label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0 4px;
+  }
+  .label-row label { margin: 0; }
+  .label-row .btn-test-voice { padding: 3px 9px; font-size: 11px; }
+  .label-row .btn-test-voice .icon { margin-right: 4px; font-size: 13px; }
+  .btn-save { background: var(--accent); color: white; width: 100%; margin-top: 10px; }
+  .save-note { font-size: 11px; color: var(--green); margin-top: 6px; min-height: 14px; }
