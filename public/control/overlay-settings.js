@@ -73,7 +73,7 @@ function rebuildOverlayLink() {
   // than served), location.origin isn't a usable http(s) origin — fall back to
   // the server's default address so the link OBS needs is always valid.
   const origin = /^https?:$/.test(location.protocol) ? location.origin : 'http://localhost:4848';
-  const url = origin + '/overlay.html';
+  const url = origin + '/overlay/overlay.html';
   overlayLink.href = url;
   overlayLink.textContent = url;
 }
