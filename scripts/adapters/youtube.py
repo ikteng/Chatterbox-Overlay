@@ -189,10 +189,13 @@ class YouTubeAdapter:
 
                     self.continuation = next_cont["continuation"]
                     delay = next_cont.get("timeoutMs") or 1500
-                    # invalidationContinuationData means YouTube wants near-immediate
-                    # repolling (it's the low-latency mode); don't clamp that to 1s.
-                    min_delay = 100 if is_invalidation else 1000
-                    await asyncio.sleep(max(delay, min_delay) / 1000)
+                    if is_invalidation:
+                        # invalidationContinuationData's timeoutMs is a "come back by"
+                        # ceiling, not a mandated wait — poll much sooner for low latency.
+                        delay = min(delay, 250)
+                    else:
+                        delay = max(delay, 1000)
+                    await asyncio.sleep(delay / 1000)
                 except Exception as err:
                     self.on_status("error", f"YouTube poll error: {err}")
                     await asyncio.sleep(3)
