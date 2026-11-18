@@ -31,7 +31,7 @@
     transition: border-color 0.2s ease, color 0.2s ease;
   }
   .status-pill .dot { width: 7px; height: 7px; }
-  .status-pill.is-connected { color: var(--text); border-color: rgba(61, 220, 132, 0.4); }
+  .status-pill.is-connected { color: var(--text); border-color: rgba(124, 92, 255, 0.4); }
 
   .layout {
     flex: 1;
