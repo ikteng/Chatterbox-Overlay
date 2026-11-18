@@ -173,12 +173,15 @@ class YouTubeAdapter:
                     conts = cont_actions.get("continuations") or []
                     cont = conts[0] if conts else None
                     next_cont = None
+                    is_invalidation = False
                     if cont:
+                        invalidation = cont.get("invalidationContinuationData")
                         next_cont = (
-                            cont.get("invalidationContinuationData")
+                            invalidation
                             or cont.get("timedContinuationData")
                             or cont.get("reloadContinuationData")
                         )
+                        is_invalidation = invalidation is not None
                     if not next_cont:
                         self.on_status("error", "YouTube chat ended (no continuation)")
                         self.running = False
@@ -186,7 +189,10 @@ class YouTubeAdapter:
 
                     self.continuation = next_cont["continuation"]
                     delay = next_cont.get("timeoutMs") or 1500
-                    await asyncio.sleep(max(delay, 1000) / 1000)
+                    # invalidationContinuationData means YouTube wants near-immediate
+                    # repolling (it's the low-latency mode); don't clamp that to 1s.
+                    min_delay = 100 if is_invalidation else 1000
+                    await asyncio.sleep(max(delay, min_delay) / 1000)
                 except Exception as err:
                     self.on_status("error", f"YouTube poll error: {err}")
                     await asyncio.sleep(3)
