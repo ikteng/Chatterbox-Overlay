@@ -1,14 +1,18 @@
   .theme-gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     margin-bottom: 10px;
   }
+  .theme-card {
+    position: relative;
+  }
   .theme-card-btn {
+    width: 100%;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 10px 8px;
+    padding: 16px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -23,72 +27,32 @@
     background: #20242e;
     box-shadow: 0 0 0 1px var(--accent) inset;
   }
-  .theme-card-name { font-size: 11px; color: var(--muted); }
+  .theme-card-name { font-size: 12px; color: var(--muted); }
   .theme-card-btn.active .theme-card-name { color: var(--text); }
+  .theme-card-icon { font-size: 22px; color: var(--muted); }
+  .theme-card-btn.active .theme-card-icon { color: var(--accent); }
 
-  .theme-card-swatch {
-    width: 100%;
-    height: 44px;
-    border-radius: 6px;
-    background: repeating-conic-gradient(#1b1e26 0% 25%, #15171d 0% 50%) 50% / 12px 12px;
+  .theme-card-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 4px 6px;
-    overflow: hidden;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    border-radius: 50%;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0;
   }
-  .theme-card-swatch span {
-    display: block;
-    height: 7px;
-    border-radius: 6px;
-  }
+  .theme-card-delete:hover { color: #ff6b6b; }
 
-  /* bubble: two rounded pill bubbles, staggered width */
-  .theme-swatch-bubble span:nth-child(1) { width: 70%; background: rgba(10,10,14,0.72); }
-  .theme-swatch-bubble span:nth-child(2) { width: 50%; background: rgba(10,10,14,0.72); align-self: flex-end; }
-
-  /* compact: three thin tight lines */
-  .theme-swatch-compact span { height: 4px; width: 85%; background: rgba(10,10,14,0.6); border-radius: 2px; }
-
-  /* minimal: plain text lines, no background */
-  .theme-swatch-minimal span { height: 3px; width: 60%; background: #ffd56b; border-radius: 0; }
-  .theme-swatch-minimal span:nth-child(2) { width: 40%; background: #9adfff; }
-
-  /* card: solid card with colored left border */
-  .theme-swatch-card span {
-    width: 80%;
+  .btn-import-template {
+    width: 100%;
     background: #2a2e38;
-    border-left: 3px solid #ffd56b;
-    border-radius: 2px;
-    padding-left: 4px;
+    color: var(--text);
+    margin-bottom: 10px;
   }
-  .theme-swatch-card span:nth-child(2) { border-left-color: #9adfff; }
-
-  /* neon: glowing outlined pills */
-  .theme-swatch-neon span {
-    width: 75%;
-    background: rgba(10,8,20,0.6);
-    border: 1px solid #7c5cff;
-    box-shadow: 0 0 6px #7c5cff;
-    border-radius: 6px;
-  }
-  .theme-swatch-neon span:nth-child(2) { border-color: #ff5ce0; box-shadow: 0 0 6px #ff5ce0; width: 55%; }
-
-  /* terminal: monospace green CRT lines */
-  .theme-swatch-terminal {
-    background: #000;
-    justify-content: center;
-    gap: 3px;
-  }
-  .theme-swatch-terminal span {
-    height: 6px;
-    width: 70%;
-    background: none;
-    border-radius: 0;
-    color: #3dff6a;
-    font-family: "Courier New", monospace;
-    font-size: 7px;
-    line-height: 6px;
-  }
-  .theme-swatch-terminal span::before { content: "> msg"; }

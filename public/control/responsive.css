@@ -9,7 +9,7 @@
       overflow-y: visible;
     }
     .main { padding: 16px; }
-    .chat-log { min-height: 320px; }
+    .live-overlay { min-height: 320px; }
   }
 
   @media (max-width: 480px) {
