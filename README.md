@@ -9,7 +9,9 @@ Free, local, unified chat overlay for YouTube and Twitch live streams — no API
 
 Both normalize into one message format and stream over a local WebSocket to:
 - a **control panel** (`control.html`) to connect/disconnect each platform and watch the unified log
-- an **OBS overlay** (`overlay.html`) — a transparent browser-source page you drop into OBS, with optional built-in text-to-speech (uses the browser's own voice, no setup).
+- an **OBS overlay** — a transparent browser-source page you drop into OBS, with optional built-in text-to-speech (uses the browser's own voice, no setup).
+
+The overlay's look comes from a **template**: a self-contained HTML/CSS/JS package, OneComme-style. Four templates ship built in (Pill, Classic, Minimal, Terminal), and you can import your own as a `.zip`.
 
 ## Setup
 
@@ -20,7 +22,7 @@ python scripts/app.py
 
 Then open:
 - Control panel: http://localhost:4848/control.html
-- OBS overlay: http://localhost:4848/overlay.html
+- OBS overlay: shown on the control panel's Overlay tab (depends on the selected template, e.g. `http://localhost:4848/templates/pill/index.html`)
 
 ### Building a standalone .exe
 
@@ -32,22 +34,32 @@ The packaged app (`dist/ChatterboxOverlay.exe`) opens its own native window via 
 
 ## Control panel
 
-The control panel (`control.html`) is organized into three tabs:
+The control panel (`control.html`) is organized into four tabs:
 - **Sources** — connect/disconnect YouTube and Twitch, with a live status dot and running message count per platform.
-- **Overlay** — theme, max messages, auto-fade, and TTS settings, plus a live preview (an embedded copy of the overlay) and a one-click copy button for the overlay URL.
+- **Design** — pick a template from the gallery (or import your own `.zip`), with a live preview. Templates own their entire look — there's no separate color/bubble styling to configure.
+- **Overlay** — max messages, auto-fade, and TTS settings, plus a one-click copy button for the overlay URL.
 - **Filters** — NG word/username lists.
 
-All of these are saved to the server (`settings.json`) via "Save settings", so the plain overlay link (`http://localhost:4848/overlay.html`, no query string needed) always reflects your saved configuration — settings persist across restarts and apply even if OBS has cached the URL.
+All of these are saved to the server (`settings.json`) via "Save settings", so the overlay link for the saved template (shown on the Overlay tab, no query string needed) always reflects your saved configuration — settings persist across restarts and apply even if OBS has cached the URL.
+
+## Custom templates
+
+A template is a folder (or `.zip`) containing:
+- `manifest.json` — `{ "id": "my-template", "name": "My Template" }` (an optional `"icon"` field, any [Iconify](https://icon-sets.iconify.design/) name, is used for its gallery card)
+- `index.html` — the overlay markup, loaded directly into the overlay iframe/browser source
+- any `style.css`/`script.js`/assets it references itself
+
+`index.html` must load the shared host script (`<script src="/overlay/template-host.js"></script>`) before its own script. The host owns the WebSocket connection, the live-preview sample-message bridge, and TTS, and calls two globals your template's own script defines:
+- `window.onConfigUpdate(cfg)` — called on load and whenever settings change; `cfg` is `{ max, lifetime, tts, voiceName, voiceRate }`
+- `window.onChatMessage(msg)` — called per chat message: `{ platform, id, author, message, messageParts, color, badge, isPaid, timestamp }`
+
+Zip it up (manifest.json and index.html at the zip root) and import it from the Design tab. Imported templates can be deleted from the gallery at any time (except the one currently selected).
 
 ## Using in OBS
 
-1. Open the **control panel**, go to the **Overlay** tab, set your theme/TTS/etc., and click **Save settings**. Use **Copy** next to the link to copy it to your clipboard.
+1. Open the **control panel**, pick a template on the **Design** tab and your TTS/etc. on the **Overlay** tab, and click **Save settings**. Use **Copy** next to the link to copy it to your clipboard.
 2. Add a **Browser Source** in OBS and paste that link as the URL.
-3. Optional: URL query params override the saved settings for that specific browser source only (useful if you want different OBS sources with different looks):
-   - `?theme=bubble|compact|minimal`
-   - `&tts=1`, `&max=20`, `&lifetime=8000`, `&voiceName=Microsoft+Huihui+Desktop`, `&voiceRate=1.25`
-   - Example: `http://localhost:4848/overlay.html?theme=compact&tts=1`
-4. In OBS, check **"Control audio via OBS"** on the browser source if you want to route/mute the TTS audio like any other source.
+3. In OBS, check **"Control audio via OBS"** on the browser source if you want to route/mute the TTS audio like any other source.
 
 ## Filtering (NG words / users)
 
