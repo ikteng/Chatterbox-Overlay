@@ -21,6 +21,8 @@ const saveNoteFilters = document.getElementById('save-note-filters');
 let currentTemplateId = 'pill';
 let availableTemplates = [];
 
+const KNOWN_SWATCH_IDS = ['pill', 'classic', 'minimal', 'terminal'];
+
 function templatePath(id) {
   return `/templates/${id}/index.html`;
 }
@@ -31,10 +33,18 @@ function renderGallery() {
     const card = document.createElement('div');
     card.className = 'theme-card';
 
+    const swatchClass = KNOWN_SWATCH_IDS.includes(tpl.id) ? `theme-swatch-${tpl.id}` : 'theme-swatch-generic';
+
     const btn = document.createElement('button');
     btn.className = 'theme-card-btn' + (tpl.id === currentTemplateId ? ' active' : '');
     btn.dataset.templateId = tpl.id;
-    btn.innerHTML = `<iconify-icon class="icon theme-card-icon" icon="${tpl.icon || 'mdi:monitor-screenshot'}"></iconify-icon><span class="theme-card-name">${tpl.name}</span>`;
+    btn.innerHTML = `
+      <span class="theme-card-swatch ${swatchClass}">
+        <span></span>
+        <span></span>
+      </span>
+      <span class="theme-card-name">${tpl.name}</span>
+    `;
     btn.addEventListener('click', () => {
       currentTemplateId = tpl.id;
       renderGallery();
