@@ -12,6 +12,7 @@ const optLifetime = document.getElementById('opt-lifetime');
 const optTts = document.getElementById('opt-tts');
 const optVoice = document.getElementById('opt-voice');
 const optRate = document.getElementById('opt-rate');
+const optNameOnTop = document.getElementById('opt-name-on-top');
 const optNgWords = document.getElementById('opt-ngwords');
 const optNgUsers = document.getElementById('opt-ngusers');
 const saveNote = document.getElementById('save-note');
@@ -148,6 +149,7 @@ function currentOverlaySettings() {
     tts: optTts.checked,
     voiceName: optVoice.value,
     voiceRate: parseFloat(optRate.value) || 1,
+    nameOnTop: optNameOnTop.checked,
   };
 }
 
@@ -266,7 +268,7 @@ if (liveFrame) {
   });
 }
 
-[optMax, optLifetime, optTts, optVoice, optRate].forEach((el) => {
+[optMax, optLifetime, optTts, optVoice, optRate, optNameOnTop].forEach((el) => {
   el.addEventListener('input', pushPreview);
   el.addEventListener('change', pushPreview);
 });
@@ -284,6 +286,7 @@ async function loadSettings() {
   pendingVoiceName = o.voiceName || '';
   if (pendingVoiceName) optVoice.value = pendingVoiceName;
   optRate.value = o.voiceRate != null ? o.voiceRate : 1;
+  optNameOnTop.checked = !!o.nameOnTop;
 
   await loadTemplates();
   rebuildOverlayLink();

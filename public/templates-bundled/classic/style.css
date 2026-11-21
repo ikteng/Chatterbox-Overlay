@@ -39,6 +39,10 @@ html, body {
 @keyframes fadeout {
   to { opacity: 0; transform: translateY(-8px); }
 }
+.meta {
+  display: inline-flex;
+  align-items: center;
+}
 .time {
   display: inline;
   font-size: 0.7em;
@@ -77,4 +81,19 @@ html, body {
   padding: 2px 6px;
   border-radius: 5px;
   margin-right: 6px;
+}
+body.name-on-top .msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+body.name-on-top .meta {
+  display: flex;
+  align-items: center;
+}
+body.name-on-top .author::after {
+  content: "";
+}
+body.name-on-top .text {
+  display: block;
 }

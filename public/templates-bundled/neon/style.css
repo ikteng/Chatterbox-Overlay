@@ -38,6 +38,10 @@ html, body {
 @keyframes fadeout {
   to { opacity: 0; transform: translateY(-8px); }
 }
+.meta {
+  display: inline-flex;
+  align-items: center;
+}
 .time {
   display: none;
 }
@@ -78,4 +82,16 @@ html, body {
   padding: 2px 6px;
   border-radius: 10px;
   margin-right: 6px;
+}
+body.name-on-top .msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+body.name-on-top .meta {
+  display: flex;
+  align-items: center;
+}
+body.name-on-top .text {
+  display: block;
 }
