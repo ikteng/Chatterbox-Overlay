@@ -12,9 +12,6 @@ DEFAULT_SETTINGS = {
         "templateId": "pill",
         "max": 20,
         "lifetime": 0,
-        "tts": False,
-        "voiceName": "",
-        "voiceRate": 1,
     },
 }
 
@@ -34,16 +31,11 @@ def sanitize_overlay(o):
     base = DEFAULT_SETTINGS["overlay"]
     max_val = _as_float(o.get("max"))
     lifetime = _as_float(o.get("lifetime"))
-    voice_rate = _as_float(o.get("voiceRate"))
     template_id = o.get("templateId")
-    voice_name = o.get("voiceName")
     return {
         "templateId": template_id if isinstance(template_id, str) and template_id.strip() else base["templateId"],
         "max": max(1, min(100, int(max_val))) if max_val is not None else base["max"],
         "lifetime": max(0, lifetime) if lifetime is not None else base["lifetime"],
-        "tts": bool(o.get("tts")),
-        "voiceName": voice_name if isinstance(voice_name, str) else base["voiceName"],
-        "voiceRate": voice_rate if voice_rate is not None else base["voiceRate"],
     }
 
 
