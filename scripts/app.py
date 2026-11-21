@@ -146,10 +146,10 @@ def main():
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
 
-    url = f"http://localhost:{PORT}/control.html"
+    url = f"http://localhost:{PORT}/control/control.html"
     print(f"Chatterbox Overlay running at http://localhost:{PORT}")
-    print(f"  Control panel: http://localhost:{PORT}/control.html")
-    print(f"  OBS overlay:   http://localhost:{PORT}/overlay.html")
+    print(f"  Control panel: http://localhost:{PORT}/control/control.html")
+    print(f"  OBS overlay:   http://localhost:{PORT}/overlay/overlay.html")
 
     if getattr(sys, "frozen", False):
         import webview

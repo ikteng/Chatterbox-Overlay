@@ -1,0 +1,101 @@
+  .icon { font-size: 15px; vertical-align: -3px; }
+  button .icon { margin-right: 5px; }
+  h3 .icon { font-size: 14px; }
+  :root {
+    color-scheme: dark;
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #262b35;
+    --text: #e8eaed;
+    --muted: #8b92a3;
+    --accent: #7c5cff;
+    --green: #3ddc84;
+    --red: #ff5c5c;
+    --yellow: #ffcc4d;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  input[type=text] {
+    width: 100%;
+    padding: 8px 10px;
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .row { display: flex; gap: 6px; }
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 0.15s ease, transform 0.1s ease, background 0.15s ease;
+  }
+  button:hover { filter: brightness(1.12); }
+  button:active { transform: scale(0.97); }
+  button:disabled { cursor: default; opacity: 0.5; filter: none; transform: none; }
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 8px 10px;
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  select {
+    width: 100%;
+    padding: 7px 32px 7px 10px;
+    background: #0d0f14 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%238b92a3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>') no-repeat right 10px center;
+    background-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  select:hover {
+    border-color: #3a4152;
+  }
+  select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.25);
+  }
+  select:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.25);
+  }
+  select option {
+    background: #171a21;
+    color: var(--text);
+  }
+  .inline-opts { display: flex; gap: 8px; align-items: center; }
+  .inline-opts input[type=checkbox] { margin: 0; }
+  .inline-opts span { font-size: 12px; }

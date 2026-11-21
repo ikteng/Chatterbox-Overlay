@@ -1,0 +1,34 @@
+  @media (max-width: 860px) {
+    body { height: auto; overflow: visible; }
+    .layout { flex-direction: column; }
+    .topbar { flex-wrap: wrap; row-gap: 8px; }
+    .sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      overflow-y: visible;
+    }
+    .main { padding: 16px; }
+    .chat-log { min-height: 320px; }
+  }
+
+  @media (max-width: 480px) {
+    .sidebar { padding: 14px; }
+    .main { padding: 12px; }
+    .tab-btn .btn-label { display: none; }
+    .tab-btn .icon { font-size: 18px; margin: 0; }
+    button .icon { margin-right: 0; }
+    .btn-connect .btn-label,
+    .btn-stop .btn-label,
+    .btn-save .btn-label,
+    .btn-copy .btn-label,
+    .btn-test-voice .btn-label,
+    .btn-import .btn-label,
+    .btn-export .btn-label,
+    .btn-clear-log .btn-label {
+      display: inline;
+      margin-left: 5px;
+    }
+    .row { flex-wrap: wrap; }
+    .topbar h1 { font-size: 13px; }
+  }
