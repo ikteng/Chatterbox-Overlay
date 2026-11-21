@@ -1,8 +1,14 @@
   .theme-gallery {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     margin-bottom: 10px;
+    border-radius: 10px;
+    transition: box-shadow 0.15s, background 0.15s;
+  }
+  .theme-gallery.drag-over {
+    box-shadow: 0 0 0 2px var(--accent) inset;
+    background: rgba(124, 92, 255, 0.08);
   }
   .theme-card {
     position: relative;
@@ -11,12 +17,12 @@
     width: 100%;
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px;
+    border-radius: 8px;
+    padding: 10px 4px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     cursor: pointer;
     color: var(--text);
     transition: border-color 0.15s, background 0.15s;
@@ -27,70 +33,17 @@
     background: #20242e;
     box-shadow: 0 0 0 1px var(--accent) inset;
   }
+  .theme-card-icon { font-size: 20px; color: var(--muted); }
+  .theme-card-btn.active .theme-card-icon { color: var(--accent); }
   .theme-card-name { font-size: 12px; color: var(--muted); }
   .theme-card-btn.active .theme-card-name { color: var(--text); }
 
-  .theme-card-swatch {
-    width: 100%;
-    height: 44px;
-    border-radius: 6px;
-    background: repeating-conic-gradient(#1b1e26 0% 25%, #15171d 0% 50%) 50% / 12px 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
-    padding: 4px 6px;
-    overflow: hidden;
-  }
-  .theme-card-swatch span {
-    display: block;
-    height: 7px;
-    border-radius: 6px;
-  }
-
-  /* pill: fully rounded bubbles, staggered width, soft dark fill */
-  .theme-swatch-pill span { width: 70%; background: rgba(10,10,14,0.72); border-radius: 10px; }
-  .theme-swatch-pill span:nth-child(2) { width: 50%; align-self: flex-end; }
-
-  /* classic: tight square-ish bubbles with a visible timestamp tick */
-  .theme-swatch-classic span { width: 75%; background: rgba(30,32,40,0.85); border-radius: 3px; }
-  .theme-swatch-classic span:nth-child(2) { width: 45%; background: rgba(30,32,40,0.85); }
-  .theme-swatch-classic span::after { content: ""; display: inline-block; width: 10px; height: 100%; background: rgba(255,255,255,0.25); margin-left: 4px; border-radius: 2px; vertical-align: top; }
-
-  /* minimal: no bubble background, just colored text lines with shadow */
-  .theme-swatch-minimal { background: repeating-conic-gradient(#242830 0% 25%, #1b1e24 0% 50%) 50% / 12px 12px; }
-  .theme-swatch-minimal span { height: 5px; width: 60%; background: #ffd56b; border-radius: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-  .theme-swatch-minimal span:nth-child(2) { width: 42%; background: #9adfff; box-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-
-  /* terminal: square corners, monospace green-on-black CRT line */
-  .theme-swatch-terminal {
-    background: #000;
-    justify-content: center;
-    gap: 3px;
-  }
-  .theme-swatch-terminal span {
-    height: 10px;
-    width: 80%;
-    background: none;
-    border-radius: 0;
-    font-family: "Courier New", monospace;
-    font-size: 8px;
-    line-height: 10px;
-    color: #e4e4e4;
-  }
-  .theme-swatch-terminal span::before { content: "> chat msg"; }
-  .theme-swatch-terminal span:nth-child(2)::before { content: "> gg wp!"; }
-
-  /* generic: fallback for custom/imported templates with unknown styling */
-  .theme-swatch-generic span { width: 65%; background: rgba(255,255,255,0.3); border-radius: 4px; }
-  .theme-swatch-generic span:nth-child(2) { width: 45%; }
-
   .theme-card-delete {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 20px;
-    height: 20px;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,6 +53,7 @@
     color: var(--muted);
     cursor: pointer;
     padding: 0;
+    font-size: 10px;
   }
   .theme-card-delete:hover { color: #ff6b6b; }
 

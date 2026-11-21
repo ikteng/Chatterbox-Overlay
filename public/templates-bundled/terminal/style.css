@@ -11,20 +11,30 @@ html, body {
   flex-direction: column;
   justify-content: flex-end;
   padding: 10px;
-  gap: 2px;
+  gap: 3px;
   box-sizing: border-box;
   --bubble-font-size: 20px;
 }
 .msg {
+  position: relative;
   font-size: var(--bubble-font-size);
   line-height: 1.35;
-  color: #e4e4e4;
-  animation: slidein 0.25s ease-out;
+  color: #baffc9;
+  text-shadow: 0 0 4px rgba(120, 255, 160, 0.35);
+  animation: slidein 0.2s ease-out;
   max-width: 100%;
   word-wrap: break-word;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(6, 12, 8, 0.72);
+  border: 1px solid rgba(120, 255, 160, 0.25);
   border-radius: 0;
-  padding: 3px 10px;
+  padding: 3px 10px 3px 16px;
+}
+.msg::before {
+  content: ">";
+  position: absolute;
+  left: 5px;
+  color: #6bffa0;
+  opacity: 0.85;
 }
 @keyframes slidein {
   from { opacity: 0; transform: translateY(12px); }
@@ -39,36 +49,40 @@ html, body {
 .time {
   display: inline;
   font-size: 0.75em;
-  opacity: 0.65;
+  opacity: 0.55;
   margin-right: 6px;
   font-variant-numeric: tabular-nums;
+  color: #6bffa0;
 }
 .plat {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  padding: 4px;
-  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  margin-right: 6px;
   vertical-align: middle;
   box-sizing: border-box;
   flex-shrink: 0;
   background: transparent !important;
   filter: none;
+  opacity: 0.85;
 }
 .plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
 .plat.youtube { color: #ff5c5c; }
 .plat.twitch { color: #b38bff; }
-.author { font-weight: 800; margin-right: 4px; }
+.author { font-weight: 800; margin-right: 4px; color: #e8ffe0; }
+.author::after { content: "$"; margin-left: 2px; opacity: 0.7; }
 .chat-emote {
   height: 1.3em;
   vertical-align: middle;
   margin: -3px 2px;
 }
 .badge-paid {
-  background: transparent;
-  color: #e4e4e4;
+  background: rgba(107, 255, 160, 0.15);
+  border: 1px solid rgba(107, 255, 160, 0.5);
+  color: #baffc9;
   font-size: 11px;
   font-weight: 800;
   padding: 2px 6px;

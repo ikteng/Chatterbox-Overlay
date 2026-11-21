@@ -21,8 +21,6 @@ const saveNoteFilters = document.getElementById('save-note-filters');
 let currentTemplateId = 'pill';
 let availableTemplates = [];
 
-const KNOWN_SWATCH_IDS = ['pill', 'classic', 'minimal', 'terminal'];
-
 function templatePath(id) {
   return `/templates/${id}/index.html`;
 }
@@ -33,16 +31,11 @@ function renderGallery() {
     const card = document.createElement('div');
     card.className = 'theme-card';
 
-    const swatchClass = KNOWN_SWATCH_IDS.includes(tpl.id) ? `theme-swatch-${tpl.id}` : 'theme-swatch-generic';
-
     const btn = document.createElement('button');
     btn.className = 'theme-card-btn' + (tpl.id === currentTemplateId ? ' active' : '');
     btn.dataset.templateId = tpl.id;
     btn.innerHTML = `
-      <span class="theme-card-swatch ${swatchClass}">
-        <span></span>
-        <span></span>
-      </span>
+      <iconify-icon class="theme-card-icon" icon="${tpl.icon || 'mdi:monitor-screenshot'}"></iconify-icon>
       <span class="theme-card-name">${tpl.name}</span>
     `;
     btn.addEventListener('click', () => {
@@ -81,14 +74,17 @@ async function loadTemplates() {
 }
 
 btnImportTemplate.addEventListener('click', () => templateFileInput.click());
-templateFileInput.addEventListener('change', async () => {
-  const file = templateFileInput.files[0];
+async function importTemplateFile(file) {
   if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.zip')) {
+    saveNoteDesign.textContent = 'Template packages must be a .zip file';
+    setTimeout(() => { saveNoteDesign.textContent = ''; }, 3000);
+    return;
+  }
   const formData = new FormData();
   formData.append('file', file);
   const res = await fetch('/api/templates', { method: 'POST', body: formData });
   const data = await res.json();
-  templateFileInput.value = '';
   if (data.error) {
     saveNoteDesign.textContent = data.error;
     setTimeout(() => { saveNoteDesign.textContent = ''; }, 3000);
@@ -98,6 +94,28 @@ templateFileInput.addEventListener('change', async () => {
   await loadTemplates();
   loadPreviewFrame();
   pushPreview();
+}
+
+templateFileInput.addEventListener('change', async () => {
+  await importTemplateFile(templateFileInput.files[0]);
+  templateFileInput.value = '';
+});
+
+['dragenter', 'dragover'].forEach((evt) => {
+  themeGallery.addEventListener(evt, (ev) => {
+    ev.preventDefault();
+    themeGallery.classList.add('drag-over');
+  });
+});
+['dragleave', 'dragend', 'drop'].forEach((evt) => {
+  themeGallery.addEventListener(evt, (ev) => {
+    ev.preventDefault();
+    themeGallery.classList.remove('drag-over');
+  });
+});
+themeGallery.addEventListener('drop', async (ev) => {
+  const file = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+  await importTemplateFile(file);
 });
 
 // Voice list comes from this browser's speechSynthesis — includes any
