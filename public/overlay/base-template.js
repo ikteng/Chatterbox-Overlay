@@ -7,32 +7,37 @@ function appendMessage(msg) {
   const div = document.createElement('div');
   div.className = 'msg';
 
+  const metaDiv = document.createElement('div');
+  metaDiv.className = 'meta';
+  div.appendChild(metaDiv);
+
   const timeSpan = document.createElement('span');
   timeSpan.className = 'time';
   timeSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  div.appendChild(timeSpan);
+  metaDiv.appendChild(timeSpan);
 
   const platSpan = document.createElement('span');
   platSpan.className = 'plat ' + msg.platform;
   platSpan.title = msg.platform;
   platSpan.innerHTML = PLATFORM_ICONS[msg.platform] || '';
-  div.appendChild(platSpan);
+  metaDiv.appendChild(platSpan);
 
   if (msg.isPaid) {
     const paidSpan = document.createElement('span');
     paidSpan.className = 'badge-paid';
     paidSpan.textContent = '$';
-    div.appendChild(paidSpan);
+    metaDiv.appendChild(paidSpan);
   }
 
   const authorSpan = document.createElement('span');
   authorSpan.className = 'author';
   authorSpan.style.color = msg.color || '#ffd56b';
   authorSpan.textContent = msg.author;
-  div.appendChild(authorSpan);
+  metaDiv.appendChild(authorSpan);
   div.style.setProperty('--author-color', msg.color || '#ffd56b');
 
   const textSpan = document.createElement('span');
+  textSpan.className = 'text';
   renderMessageParts(textSpan, msg);
   div.appendChild(textSpan);
 
@@ -54,6 +59,7 @@ window.__msgLifetime = 0;
 window.onConfigUpdate = (cfg) => {
   maxMessages = cfg.max || 20;
   window.__msgLifetime = cfg.lifetime || 0;
+  document.body.classList.toggle('name-on-top', !!cfg.nameOnTop);
 };
 
 window.onChatMessage = appendMessage;

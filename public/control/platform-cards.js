@@ -11,6 +11,7 @@ cards.forEach(card => {
   connectBtn.addEventListener('click', async () => {
     const url = urlInput.value.trim();
     if (!url) return;
+    card.classList.remove('is-error');
     statusText.textContent = 'Connecting...';
     const res = await fetch('/api/connect', {
       method: 'POST',
@@ -18,7 +19,10 @@ cards.forEach(card => {
       body: JSON.stringify({ platform, url })
     });
     const data = await res.json();
-    if (data.error) statusText.textContent = 'Error: ' + data.error;
+    if (data.error) {
+      statusText.textContent = 'Error: ' + data.error;
+      card.classList.add('is-error');
+    }
   });
 
   stopBtn.addEventListener('click', async () => {
@@ -29,7 +33,7 @@ cards.forEach(card => {
     });
     dot.className = 'dot';
     statusText.textContent = 'Not connected';
-    card.classList.remove('is-connected');
+    card.classList.remove('is-connected', 'is-error');
     const badge = card.querySelector('.count-badge');
     if (badge) badge.textContent = '0 msgs';
     syncStatusPill(platform, '');
@@ -53,6 +57,7 @@ function updateStatus(platform, status, text) {
   dot.className = 'dot ' + status;
   statusText.textContent = text;
   card.classList.toggle('is-connected', status === 'connected');
+  card.classList.toggle('is-error', status === 'error');
   if (status === 'stopped') {
     const badge = card.querySelector('.count-badge');
     if (badge) badge.textContent = '0 msgs';

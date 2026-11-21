@@ -1,23 +1,19 @@
   @media (max-width: 860px) {
-    body { height: auto; overflow: visible; }
-    .layout { flex-direction: column; }
-    .topbar { flex-wrap: wrap; row-gap: 8px; }
-    .sidebar {
-      width: 100%;
-      border-right: none;
-      border-bottom: 1px solid var(--border);
-      overflow-y: visible;
+    .sidebar { width: 85vw; max-width: 320px; }
+    .main, .main.chat-collapsed { padding: 18px; }
+    .chat-float {
+      left: auto !important;
+      right: 12px !important;
+      top: auto !important;
+      bottom: 12px !important;
+      width: min(320px, calc(100vw - 24px)) !important;
+      height: 50vh;
     }
-    .main { padding: 16px; }
-    .live-overlay { min-height: 320px; }
+    .chat-dock-bar { left: auto; right: 12px; width: auto; justify-content: center; }
   }
 
   @media (max-width: 480px) {
-    .sidebar { padding: 14px; }
-    .main { padding: 12px; }
-    .tab-btn .btn-label { display: none; }
-    .tab-btn .icon { font-size: 18px; margin: 0; }
-    button .icon { margin-right: 0; }
+    .main, .main.chat-collapsed { padding: 14px; }
     .btn-connect .btn-label,
     .btn-stop .btn-label,
     .btn-save .btn-label,

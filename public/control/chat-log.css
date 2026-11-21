@@ -1,24 +1,9 @@
-  .chat-header {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  .chat-header h2 {
-    font-size: 13px;
-    margin: 0;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-  }
   .live-overlay {
     flex: 1;
-    min-height: 160px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    min-height: 0;
+    position: relative;
     overflow: hidden;
-    background: repeating-conic-gradient(#1b1e26 0% 25%, #15171d 0% 50%) 50% / 20px 20px;
+    background: repeating-conic-gradient(#171922 0% 25%, #121318 0% 50%) 50% / 22px 22px;
   }
   .live-overlay-frame {
     width: 100%;
@@ -28,3 +13,19 @@
     background: transparent;
     color-scheme: normal;
   }
+  .live-overlay-empty {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 24px;
+    text-align: center;
+    pointer-events: none;
+  }
+  .live-overlay-empty .icon { font-size: 30px; color: var(--muted-soft); margin-bottom: 4px; }
+  .live-overlay-empty p { margin: 0; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .live-overlay-empty span { font-size: 11.5px; color: var(--muted-soft); max-width: 220px; }
+  body:not(:has(.status-pill.is-connected)) .live-overlay-empty { display: flex; }

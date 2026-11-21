@@ -1,34 +1,71 @@
   .platform-card {
     background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-card);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
   .platform-card.is-connected {
-    border-color: rgba(124, 92, 255, 0.45);
-    box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.08);
+    border-color: rgba(124, 92, 255, 0.5);
+    box-shadow: var(--shadow-card), 0 0 0 1px rgba(124, 92, 255, 0.12);
   }
-  .platform-card h3 {
-    margin: 0 0 8px;
-    font-size: 13px;
+  .platform-card.is-error {
+    border-color: rgba(255, 101, 101, 0.5);
+    box-shadow: var(--shadow-card), 0 0 0 1px rgba(255, 101, 101, 0.12);
+  }
+
+  .platform-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .platform-icon {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    font-size: 20px;
   }
+  .platform-icon .icon { margin: 0; }
+  .platform-icon--youtube { background: rgba(255, 0, 0, 0.12); color: #ff3b3b; }
+  .platform-icon--twitch { background: rgba(145, 70, 255, 0.14); color: #9146ff; }
+
+  .platform-card-title { flex: 1; min-width: 0; }
+  .platform-card-title h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
   .count-badge {
-    margin-left: auto;
+    flex-shrink: 0;
+    margin-top: 2px;
     font-size: 10px;
     font-weight: 700;
     color: var(--muted);
-    background: #0d0f14;
+    background: var(--bg-soft);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 1px 8px;
+    padding: 2px 9px;
   }
+
+  .field-group { margin-bottom: 12px; }
+  .field-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
   .dot {
     width: 8px; height: 8px; border-radius: 50%;
-    background: var(--muted);
+    background: var(--muted-soft);
     display: inline-block;
     flex-shrink: 0;
   }
@@ -40,6 +77,34 @@
     70% { box-shadow: 0 0 0 5px rgba(124, 92, 255, 0); }
     100% { box-shadow: 0 0 0 0 rgba(124, 92, 255, 0); }
   }
-  .btn-connect { background: var(--accent); color: white; flex: 1; }
-  .btn-stop { background: #2a2e38; color: var(--text); }
-  .status-text { font-size: 11px; color: var(--muted); margin-top: 6px; min-height: 14px; }
+  .btn-connect {
+    background: var(--accent);
+    color: white;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-stop {
+    background: var(--panel-raised);
+    color: var(--text);
+    border: 1px solid var(--border);
+    width: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-stop .icon { margin: 0; }
+  .status-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--muted);
+    min-height: 14px;
+    transition: color 0.2s ease;
+  }
+  .platform-card.is-connected .status-text { color: var(--green); }
+  .platform-card.is-error .status-text { color: var(--red); }
