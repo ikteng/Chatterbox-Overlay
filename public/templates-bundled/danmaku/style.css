@@ -1,0 +1,70 @@
+html, body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+}
+#feed {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  --bubble-font-size: 22px;
+}
+.msg {
+  position: absolute;
+  top: 0;
+  left: 100vw;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: var(--bubble-font-size);
+  line-height: 1.2;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9);
+  will-change: transform;
+}
+.msg.fade-out {
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+.time {
+  display: none;
+}
+.plat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.plat.youtube { background: #ff0000; color: #fff; }
+.plat.twitch { background: #9147ff; color: #fff; }
+.author {
+  font-weight: 800;
+  margin-right: 5px;
+  color: var(--author-color, #ffd56b);
+}
+.author::after { content: ":"; }
+.chat-emote {
+  height: 1.2em;
+  vertical-align: middle;
+  margin: -3px 2px;
+}
+.badge-paid {
+  background: #ffcc4d;
+  color: #111;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 5px;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
