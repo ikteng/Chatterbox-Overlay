@@ -120,31 +120,6 @@
         <label>Auto-fade after (ms, 0 = never)</label>
         <input type="text" id="opt-lifetime" value="0" />
 
-        <div class="inline-opts" style="margin-top:10px;">
-          <input type="checkbox" id="opt-tts" />
-          <span>Enable text-to-speech</span>
-        </div>
-
-        <div class="label-row">
-          <label>TTS voice</label>
-          <button class="btn-test-voice" id="btn-test-voice"><iconify-icon class="icon" icon="mdi:volume-high"></iconify-icon><span class="btn-label">Test voice</span></button>
-        </div>
-        <select id="opt-voice">
-          <option value="">Browser default (auto-match language)</option>
-        </select>
-
-        <label>TTS speed</label>
-        <select id="opt-rate">
-          <option value="0.25">0.25x</option>
-          <option value="0.5">0.5x</option>
-          <option value="0.75">0.75x</option>
-          <option value="1" selected>1x</option>
-          <option value="1.25">1.25x</option>
-          <option value="1.5">1.5x</option>
-          <option value="1.75">1.75x</option>
-          <option value="2">2x</option>
-        </select>
-
         <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
         <div class="save-note" id="save-note"></div>
       </div>
@@ -155,7 +130,7 @@
           <a href="#" target="_blank" id="overlay-link"></a>
           <button class="btn-copy" id="btn-copy-link"><iconify-icon class="icon" icon="mdi:content-copy"></iconify-icon><span class="btn-label">Copy</span></button>
         </div>
-        <div style="margin-top:8px; color: var(--muted);">Add as a Browser Source in OBS. Enable "Control audio via OBS" if you turn on TTS. Settings are saved to the server, so this link also works without any query params — just save above.</div>
+        <div style="margin-top:8px; color: var(--muted);">Add as a Browser Source in OBS. Settings are saved to the server, so this link also works without any query params — just save above.</div>
       </div>
     </div>
 
