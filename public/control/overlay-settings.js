@@ -9,9 +9,6 @@ const btnImportTemplate = document.getElementById('btn-import-template');
 const templateFileInput = document.getElementById('template-file-input');
 const optMax = document.getElementById('opt-max');
 const optLifetime = document.getElementById('opt-lifetime');
-const optTts = document.getElementById('opt-tts');
-const optVoice = document.getElementById('opt-voice');
-const optRate = document.getElementById('opt-rate');
 const optNameOnTop = document.getElementById('opt-name-on-top');
 const optNgWords = document.getElementById('opt-ngwords');
 const optNgUsers = document.getElementById('opt-ngusers');
@@ -119,36 +116,11 @@ themeGallery.addEventListener('drop', async (ev) => {
   await importTemplateFile(file);
 });
 
-// Voice list comes from this browser's speechSynthesis — includes any
-// offline OS voices plus online "Natural" voices Edge/Chrome expose.
-let pendingVoiceName = '';
-function populateVoices() {
-  if (!('speechSynthesis' in window)) return;
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return;
-  const current = optVoice.value || pendingVoiceName;
-  optVoice.innerHTML = '<option value="">Browser default (auto-match language)</option>';
-  voices.forEach((v) => {
-    const option = document.createElement('option');
-    option.value = v.name;
-    option.textContent = `${v.name} (${v.lang})`;
-    optVoice.appendChild(option);
-  });
-  if (current) optVoice.value = current;
-}
-if ('speechSynthesis' in window) {
-  populateVoices();
-  window.speechSynthesis.onvoiceschanged = populateVoices;
-}
-
 function currentOverlaySettings() {
   return {
     templateId: currentTemplateId,
     max: parseInt(optMax.value, 10) || 20,
     lifetime: parseInt(optLifetime.value, 10) || 0,
-    tts: optTts.checked,
-    voiceName: optVoice.value,
-    voiceRate: parseFloat(optRate.value) || 1,
     nameOnTop: optNameOnTop.checked,
   };
 }
@@ -204,23 +176,6 @@ btnCopyLink.addEventListener('click', async () => {
   }, 1500);
 });
 
-// ---- test voice (speaks right here in the control panel, using unsaved values) ----
-const btnTestVoice = document.getElementById('btn-test-voice');
-btnTestVoice.addEventListener('click', () => {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const cfg = currentOverlaySettings();
-  const utter = new SpeechSynthesisUtterance('This is a test of the chat overlay voice and speed.');
-  utter.rate = cfg.voiceRate;
-  if (cfg.voiceName) {
-    const match = window.speechSynthesis.getVoices().find((v) => v.name === cfg.voiceName);
-    if (match) utter.voice = match;
-  }
-  btnTestVoice.classList.add('playing');
-  utter.onend = utter.onerror = () => btnTestVoice.classList.remove('playing');
-  window.speechSynthesis.speak(utter);
-});
-
 // ---- preview sample messages (pushes fake messages into the preview iframe's overlay) ----
 const SAMPLE_MESSAGES = [
   { platform: 'twitch', author: 'StreamFan22', message: 'This overlay looks great! 🎉', color: '#ff9ac1' },
@@ -268,7 +223,7 @@ if (liveFrame) {
   });
 }
 
-[optMax, optLifetime, optTts, optVoice, optRate, optNameOnTop].forEach((el) => {
+[optMax, optLifetime, optNameOnTop].forEach((el) => {
   el.addEventListener('input', pushPreview);
   el.addEventListener('change', pushPreview);
 });
@@ -282,10 +237,6 @@ async function loadSettings() {
   currentTemplateId = o.templateId || 'pill';
   optMax.value = o.max != null ? o.max : 20;
   optLifetime.value = o.lifetime != null ? o.lifetime : 0;
-  optTts.checked = !!o.tts;
-  pendingVoiceName = o.voiceName || '';
-  if (pendingVoiceName) optVoice.value = pendingVoiceName;
-  optRate.value = o.voiceRate != null ? o.voiceRate : 1;
   optNameOnTop.checked = !!o.nameOnTop;
 
   await loadTemplates();
