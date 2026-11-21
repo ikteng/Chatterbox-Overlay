@@ -11,25 +11,21 @@ html, body {
   flex-direction: column;
   justify-content: flex-end;
   padding: 10px;
-  gap: 6px;
+  gap: 8px;
   box-sizing: border-box;
-}
-#feed {
-  --bubble-bg: rgba(10, 10, 14, 0.72);
   --bubble-text: #fff;
   --bubble-font-size: 20px;
 }
 .msg {
-  background: var(--bubble-bg);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: var(--bubble-font-size);
-  color: var(--bubble-text);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  font-size: 22px;
   line-height: 1.35;
+  color: var(--bubble-text);
   animation: slidein 0.25s ease-out;
   max-width: 100%;
   word-wrap: break-word;
+  background: transparent;
+  padding: 0 4px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.6);
 }
 @keyframes slidein {
   from { opacity: 0; transform: translateY(12px); }
@@ -41,23 +37,32 @@ html, body {
 @keyframes fadeout {
   to { opacity: 0; transform: translateY(-8px); }
 }
+.time {
+  display: none;
+}
 .plat {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  padding: 4px;
-  border-radius: 5px;
-  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
   vertical-align: middle;
   box-sizing: border-box;
+  flex-shrink: 0;
+  background: transparent;
+  padding: 0;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
 }
 .plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
-.plat.youtube { background: #ff0000; color: #fff; }
-.plat.twitch { background: #9147ff; color: #fff; }
-.plat.douyin { background: #00f2ea; color: #111; }
+.plat.youtube { color: #ff5c5c; }
+.plat.twitch { color: #b38bff; }
 .author { font-weight: 800; margin-right: 4px; }
+.chat-emote {
+  height: 1.3em;
+  vertical-align: middle;
+  margin: -3px 2px;
+}
 .badge-paid {
   background: #ffcc4d;
   color: #111;

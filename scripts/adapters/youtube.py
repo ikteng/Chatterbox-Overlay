@@ -77,12 +77,25 @@ def parse_actions(actions, seen):
         author = (renderer.get("authorName") or {}).get("simpleText") or "Unknown"
         runs = (renderer.get("message") or {}).get("runs") or []
         parts = []
+        message_parts = []
         for r in runs:
             if "text" in r:
                 parts.append(r["text"])
+                message_parts.append({"type": "text", "text": r["text"]})
             elif "emoji" in r:
-                shortcuts = (r.get("emoji") or {}).get("shortcuts") or []
-                parts.append(shortcuts[0] if shortcuts else "")
+                emoji = r.get("emoji") or {}
+                shortcuts = emoji.get("shortcuts") or []
+                fallback = shortcuts[0] if shortcuts else (emoji.get("emojiId") or "")
+                thumbs = (emoji.get("image") or {}).get("thumbnails") or []
+                image_url = thumbs[-1]["url"] if thumbs else None
+                if emoji.get("isCustomEmoji"):
+                    parts.append(fallback)
+                    message_parts.append({"type": "emote", "text": fallback, "url": image_url})
+                else:
+                    # emojiId is the literal Unicode glyph for standard emoji.
+                    glyph = emoji.get("emojiId") or ""
+                    parts.append(glyph)
+                    message_parts.append({"type": "text", "text": glyph})
         message = "".join(parts)
 
         badge = None
@@ -96,6 +109,7 @@ def parse_actions(actions, seen):
             "id": msg_id,
             "author": author,
             "message": message,
+            "messageParts": message_parts,
             "color": None,
             "badge": badge,
             "isPaid": bool(item.get("liveChatPaidMessageRenderer")),

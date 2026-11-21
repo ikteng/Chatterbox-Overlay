@@ -21,6 +21,57 @@ def parse_tags(tag_str):
     return tags
 
 
+def _emote_url(emote_id):
+    return f"https://static-cdn.jtvnw.net/emoticons/v2/{emote_id}/default/dark/2.0"
+
+
+def parse_emotes_tag(emotes_str, message):
+    """Parse the IRC v3 `emotes` tag (e.g. "25:0-4,12-16/1902:6-10") into
+    ordered message parts, splitting `message` around each emote occurrence.
+    `message` must be the raw IRC text (UTF-16 code unit offsets apply)."""
+    if not emotes_str:
+        return [{"type": "text", "text": message}] if message else []
+
+    ranges = []
+    for entry in emotes_str.split("/"):
+        if ":" not in entry:
+            continue
+        emote_id, positions = entry.split(":", 1)
+        for pos in positions.split(","):
+            if "-" not in pos:
+                continue
+            start, end = pos.split("-", 1)
+            try:
+                ranges.append((int(start), int(end), emote_id))
+            except ValueError:
+                continue
+    if not ranges:
+        return [{"type": "text", "text": message}] if message else []
+    ranges.sort(key=lambda r: r[0])
+
+    # Twitch emote ranges are UTF-16 code unit offsets; Python strings are
+    # indexed by code point, so operate on a UTF-16 buffer and decode back.
+    units = message.encode("utf-16-le")
+
+    parts = []
+    cursor = 0
+    for start, end, emote_id in ranges:
+        if start < cursor:
+            continue
+        if start > cursor:
+            text = units[cursor * 2:start * 2].decode("utf-16-le")
+            if text:
+                parts.append({"type": "text", "text": text})
+        name = units[start * 2:(end + 1) * 2].decode("utf-16-le")
+        parts.append({"type": "emote", "text": name, "url": _emote_url(emote_id)})
+        cursor = end + 1
+    if cursor * 2 < len(units):
+        text = units[cursor * 2:].decode("utf-16-le")
+        if text:
+            parts.append({"type": "text", "text": text})
+    return parts
+
+
 def parse_irc_line(line):
     tag_str = None
     rest = line
@@ -39,6 +90,7 @@ def parse_irc_line(line):
             "type": "message",
             "author": tags.get("display-name") or nick,
             "message": message,
+            "messageParts": parse_emotes_tag(tags.get("emotes"), message),
             "color": tags.get("color") or None,
             "badge": badges.split(",")[0].split("/")[0] if badges else None,
             "id": tags.get("id") or f"{time.time()}-{random.random()}",
@@ -103,6 +155,7 @@ class TwitchAdapter:
                                 "id": parsed["id"],
                                 "author": parsed["author"],
                                 "message": parsed["message"],
+                                "messageParts": parsed["messageParts"],
                                 "color": parsed["color"],
                                 "badge": parsed["badge"],
                                 "isPaid": False,

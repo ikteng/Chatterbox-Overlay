@@ -4,7 +4,6 @@ function connectWs() {
   ws.onmessage = (ev) => {
     const data = JSON.parse(ev.data);
     if (data.type === 'chat') {
-      appendMessage(data.message);
       updateCount(data.message.platform, data.count);
     } else if (data.type === 'status') {
       updateStatus(data.platform, data.status, data.text);

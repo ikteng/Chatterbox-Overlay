@@ -1,0 +1,76 @@
+html, body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: "Courier New", monospace;
+}
+#feed {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px;
+  gap: 2px;
+  box-sizing: border-box;
+  --bubble-font-size: 20px;
+}
+.msg {
+  font-size: var(--bubble-font-size);
+  line-height: 1.35;
+  color: #e4e4e4;
+  animation: slidein 0.25s ease-out;
+  max-width: 100%;
+  word-wrap: break-word;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 0;
+  padding: 3px 10px;
+}
+@keyframes slidein {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.msg.fade-out {
+  animation: fadeout 0.6s ease forwards;
+}
+@keyframes fadeout {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+.time {
+  display: inline;
+  font-size: 0.75em;
+  opacity: 0.65;
+  margin-right: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.plat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  margin-right: 8px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background: transparent !important;
+  filter: none;
+}
+.plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.plat.youtube { color: #ff5c5c; }
+.plat.twitch { color: #b38bff; }
+.author { font-weight: 800; margin-right: 4px; }
+.chat-emote {
+  height: 1.3em;
+  vertical-align: middle;
+  margin: -3px 2px;
+}
+.badge-paid {
+  background: transparent;
+  color: #e4e4e4;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 6px;
+  margin-right: 6px;
+}
