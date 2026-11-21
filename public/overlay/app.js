@@ -104,6 +104,7 @@ function appendMessage(msg) {
   authorSpan.style.color = msg.color || '#ffd56b';
   authorSpan.textContent = msg.author;
   div.appendChild(authorSpan);
+  div.style.setProperty('--author-color', msg.color || '#ffd56b');
 
   const textSpan = document.createElement('span');
   textSpan.textContent = msg.message;
