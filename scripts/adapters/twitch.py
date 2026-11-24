@@ -8,6 +8,9 @@ import aiohttp
 from url_parse import extract_twitch_channel
 
 _PRIVMSG_RE = re.compile(r"^:(\S+) PRIVMSG #\S+ :(.*)$")
+_USERNOTICE_RE = re.compile(r"^:(\S+) USERNOTICE #\S+(?: :(.*))?$")
+
+_SUB_EVENTS = {"sub", "resub", "subgift", "submysterygift", "giftpaidupgrade", "anongiftpaidupgrade"}
 
 
 def parse_tags(tag_str):
@@ -86,6 +89,7 @@ def parse_irc_line(line):
         nick = m.group(1).split("!")[0]
         message = m.group(2)
         badges = tags.get("badges")
+        bits = _to_int(tags.get("bits"))
         return {
             "type": "message",
             "author": tags.get("display-name") or nick,
@@ -94,15 +98,56 @@ def parse_irc_line(line):
             "color": tags.get("color") or None,
             "badge": badges.split(",")[0].split("/")[0] if badges else None,
             "id": tags.get("id") or f"{time.time()}-{random.random()}",
+            "isPaid": bool(bits),
+            "amount": f"{bits} Bits" if bits else None,
+        }
+
+    m = _USERNOTICE_RE.match(rest)
+    if m:
+        nick = m.group(1).split("!")[0]
+        message = m.group(2) or ""
+        msg_id = tags.get("msg-id") or ""
+        author = tags.get("display-name") or nick
+        return {
+            "type": "event",
+            "eventType": msg_id,
+            "id": tags.get("id") or f"{time.time()}-{random.random()}",
+            "author": author,
+            "message": message,
+            "messageParts": parse_emotes_tag(tags.get("emotes"), message) if message else [],
+            "color": tags.get("color") or None,
+            "badge": (tags.get("badges") or "").split(",")[0].split("/")[0] or None,
+            "systemMessage": tags.get("system-msg", "").replace("\\s", " "),
+            "isPaid": msg_id in _SUB_EVENTS,
+            "data": {
+                "subPlan": tags.get("msg-param-sub-plan"),
+                "subPlanName": (tags.get("msg-param-sub-plan-name") or "").replace("\\s", " ") or None,
+                "cumulativeMonths": _to_int(tags.get("msg-param-cumulative-months")),
+                "streakMonths": _to_int(tags.get("msg-param-streak-months")),
+                "giftMonths": _to_int(tags.get("msg-param-gift-months")),
+                "recipient": tags.get("msg-param-recipient-display-name") or tags.get("msg-param-recipient-user-name"),
+                "giftCount": _to_int(tags.get("msg-param-mass-gift-count")),
+                "senderTotalGifts": _to_int(tags.get("msg-param-sender-count")),
+                "raidViewerCount": _to_int(tags.get("msg-param-viewerCount")),
+                "raidFromChannel": tags.get("msg-param-displayName") or tags.get("msg-param-login"),
+            },
         }
     return None
 
 
+def _to_int(val):
+    try:
+        return int(val)
+    except (TypeError, ValueError):
+        return None
+
+
 class TwitchAdapter:
-    def __init__(self, url, on_message, on_status):
+    def __init__(self, url, on_message, on_status, on_event=None):
         self.channel = extract_twitch_channel(url)
         self.on_message = on_message
         self.on_status = on_status
+        self.on_event = on_event
         self.running = False
         self.ws = None
         self._task = None
@@ -149,7 +194,9 @@ class TwitchAdapter:
                             await ws.send_str("PONG :tmi.twitch.tv")
                             continue
                         parsed = parse_irc_line(line)
-                        if parsed:
+                        if not parsed:
+                            continue
+                        if parsed["type"] == "message":
                             self.on_message({
                                 "platform": "twitch",
                                 "id": parsed["id"],
@@ -158,7 +205,23 @@ class TwitchAdapter:
                                 "messageParts": parsed["messageParts"],
                                 "color": parsed["color"],
                                 "badge": parsed["badge"],
-                                "isPaid": False,
+                                "isPaid": parsed["isPaid"],
+                                "amount": parsed["amount"],
+                                "timestamp": int(time.time() * 1000),
+                            })
+                        elif parsed["type"] == "event" and self.on_event:
+                            self.on_event({
+                                "platform": "twitch",
+                                "id": parsed["id"],
+                                "eventType": parsed["eventType"],
+                                "author": parsed["author"],
+                                "message": parsed["message"],
+                                "messageParts": parsed["messageParts"],
+                                "color": parsed["color"],
+                                "badge": parsed["badge"],
+                                "systemMessage": parsed["systemMessage"],
+                                "isPaid": parsed["isPaid"],
+                                "data": parsed["data"],
                                 "timestamp": int(time.time() * 1000),
                             })
         self.ws = None

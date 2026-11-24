@@ -23,19 +23,16 @@
     gap: 6px;
     cursor: pointer;
     color: var(--text);
-    box-shadow: var(--shadow-card);
-    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    transition: border-color 0.15s, background 0.15s;
   }
-  .theme-card-btn:hover { border-color: #3a4152; }
-  .theme-card-btn:active { transform: scale(0.98); }
+  .theme-card-btn:hover { border-color: #434550; }
   .theme-card-btn.active {
     border-color: var(--accent);
     background: var(--panel-raised);
-    box-shadow: var(--shadow-card), 0 0 0 1px var(--accent) inset;
   }
   .theme-card-icon { font-size: 20px; color: var(--muted); }
   .theme-card-btn.active .theme-card-icon { color: var(--accent-strong); }
-  .theme-card-name { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+  .theme-card-name { font-size: 11.5px; font-weight: 500; color: var(--muted); }
   .theme-card-btn.active .theme-card-name { color: var(--text); }
 
   .theme-card-delete {

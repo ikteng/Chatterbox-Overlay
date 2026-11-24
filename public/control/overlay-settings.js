@@ -44,6 +44,16 @@ function renderGallery() {
     });
     card.appendChild(btn);
 
+    const reveal = document.createElement('button');
+    reveal.className = 'theme-card-reveal';
+    reveal.innerHTML = '<iconify-icon icon="mdi:folder-open-outline"></iconify-icon>';
+    reveal.title = 'Reveal template folder';
+    reveal.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      await fetch(`/api/templates/${encodeURIComponent(tpl.id)}/reveal`, { method: 'POST' });
+    });
+    card.appendChild(reveal);
+
     if (tpl.id !== currentTemplateId) {
       const del = document.createElement('button');
       del.className = 'theme-card-delete';
@@ -180,8 +190,9 @@ btnCopyLink.addEventListener('click', async () => {
 const SAMPLE_MESSAGES = [
   { platform: 'twitch', author: 'StreamFan22', message: 'This overlay looks great! 🎉', color: '#ff9ac1' },
   { platform: 'youtube', author: '李明', message: '你好,主播!加油!', color: '#5bc9ff' },
-  { platform: 'youtube', author: 'BigDonor', message: 'Keep up the great content!', color: '#8fffb0', isPaid: true },
+  { platform: 'youtube', author: 'BigDonor', message: 'Keep up the great content!', color: '#8fffb0', isPaid: true, amount: '$5.00' },
   { platform: 'twitch', author: 'night_owl', message: 'lol that was close', color: '#c6a6ff' },
+  { platform: 'twitch', author: 'BitsBandit', message: 'Cheer100 let\'s go!', color: '#ffb84d', isPaid: true, amount: '100 Bits' },
 ];
 let sampleIndex = 0;
 function pushSampleMessage() {

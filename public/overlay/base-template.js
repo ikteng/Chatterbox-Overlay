@@ -25,7 +25,7 @@ function appendMessage(msg) {
   if (msg.isPaid) {
     const paidSpan = document.createElement('span');
     paidSpan.className = 'badge-paid';
-    paidSpan.textContent = '$';
+    paidSpan.textContent = msg.amount || '$';
     metaDiv.appendChild(paidSpan);
   }
 
@@ -54,6 +54,63 @@ function appendMessage(msg) {
   }
 }
 
+function appendEvent(evt) {
+  const div = document.createElement('div');
+  div.className = 'msg event event-' + evt.eventType;
+  div.style.setProperty('--author-color', evt.color || '#ffd56b');
+
+  const metaDiv = document.createElement('div');
+  metaDiv.className = 'meta';
+  div.appendChild(metaDiv);
+
+  const platSpan = document.createElement('span');
+  platSpan.className = 'plat ' + evt.platform;
+  platSpan.title = evt.platform;
+  platSpan.innerHTML = PLATFORM_ICONS[evt.platform] || '';
+  metaDiv.appendChild(platSpan);
+
+  const authorSpan = document.createElement('span');
+  authorSpan.className = 'author';
+  authorSpan.style.color = evt.color || '#ffd56b';
+  authorSpan.textContent = evt.author;
+  metaDiv.appendChild(authorSpan);
+
+  const textSpan = document.createElement('span');
+  textSpan.className = 'text';
+  if (evt.systemMessage) {
+    textSpan.appendChild(document.createTextNode(evt.systemMessage));
+  } else if (evt.message) {
+    renderMessageParts(textSpan, evt);
+  }
+  div.appendChild(textSpan);
+
+  if (evt.message && evt.systemMessage) {
+    const quoteDiv = document.createElement('div');
+    quoteDiv.className = 'event-quote';
+    renderMessageParts(quoteDiv, evt);
+    div.appendChild(quoteDiv);
+  }
+
+  if (evt.data && evt.data.stickerUrl) {
+    const img = document.createElement('img');
+    img.src = evt.data.stickerUrl;
+    img.className = 'event-sticker';
+    div.appendChild(img);
+  }
+
+  feed.appendChild(div);
+  while (feed.children.length > maxMessages) {
+    feed.removeChild(feed.firstChild);
+  }
+
+  if (window.__msgLifetime > 0) {
+    setTimeout(() => {
+      div.classList.add('fade-out');
+      setTimeout(() => div.remove(), 650);
+    }, window.__msgLifetime);
+  }
+}
+
 window.__msgLifetime = 0;
 
 window.onConfigUpdate = (cfg) => {
@@ -63,3 +120,4 @@ window.onConfigUpdate = (cfg) => {
 };
 
 window.onChatMessage = appendMessage;
+window.onChatEvent = appendEvent;
