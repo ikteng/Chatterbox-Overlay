@@ -9,25 +9,14 @@ DEFAULT_SETTINGS = {
     "ngWords": [],
     "ngUsers": [],
     "overlay": {
-        "theme": "bubble",
+        "templateId": "pill",
         "max": 20,
         "lifetime": 0,
         "tts": False,
         "voiceName": "",
         "voiceRate": 1,
-        "bubble": {
-            "bgColor": "#0a0a0e",
-            "bgOpacity": 0.72,
-            "textColor": "#ffffff",
-            "fontSize": 20,
-        },
     },
-    "presets": [],
 }
-
-import re
-
-HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
 
 
 def _as_float(v):
@@ -40,52 +29,22 @@ def _as_float(v):
         return None
 
 
-def sanitize_bubble(b):
-    b = b or {}
-    base = DEFAULT_SETTINGS["overlay"]["bubble"]
-    bg_color = b.get("bgColor")
-    text_color = b.get("textColor")
-    bg_opacity = _as_float(b.get("bgOpacity"))
-    font_size = _as_float(b.get("fontSize"))
-    return {
-        "bgColor": bg_color if isinstance(bg_color, str) and HEX_COLOR_RE.match(bg_color) else base["bgColor"],
-        "bgOpacity": max(0, min(1, bg_opacity)) if bg_opacity is not None else base["bgOpacity"],
-        "textColor": text_color if isinstance(text_color, str) and HEX_COLOR_RE.match(text_color) else base["textColor"],
-        "fontSize": max(10, min(48, font_size)) if font_size is not None else base["fontSize"],
-    }
-
-
 def sanitize_overlay(o):
     o = o or {}
     base = DEFAULT_SETTINGS["overlay"]
     max_val = _as_float(o.get("max"))
     lifetime = _as_float(o.get("lifetime"))
     voice_rate = _as_float(o.get("voiceRate"))
-    theme = o.get("theme")
+    template_id = o.get("templateId")
     voice_name = o.get("voiceName")
     return {
-        "theme": theme if theme in ("bubble", "compact", "minimal") else base["theme"],
+        "templateId": template_id if isinstance(template_id, str) and template_id.strip() else base["templateId"],
         "max": max(1, min(100, int(max_val))) if max_val is not None else base["max"],
         "lifetime": max(0, lifetime) if lifetime is not None else base["lifetime"],
         "tts": bool(o.get("tts")),
         "voiceName": voice_name if isinstance(voice_name, str) else base["voiceName"],
         "voiceRate": voice_rate if voice_rate is not None else base["voiceRate"],
-        "bubble": sanitize_bubble(o.get("bubble")),
     }
-
-
-def sanitize_presets(presets):
-    if not isinstance(presets, list):
-        return []
-    result = []
-    for p in presets:
-        if not isinstance(p, dict):
-            continue
-        name = p.get("name")
-        if not isinstance(name, str) or not name.strip():
-            continue
-        result.append({"name": name.strip()[:40], "bubble": sanitize_bubble(p.get("bubble"))})
-    return result
 
 
 def load():
@@ -96,10 +55,11 @@ def load():
             "ngWords": parsed.get("ngWords") if isinstance(parsed.get("ngWords"), list) else [],
             "ngUsers": parsed.get("ngUsers") if isinstance(parsed.get("ngUsers"), list) else [],
             "overlay": sanitize_overlay(parsed.get("overlay")),
-            "presets": sanitize_presets(parsed.get("presets")),
         }
     except Exception:
-        return json.loads(json.dumps(DEFAULT_SETTINGS))
+        defaults = json.loads(json.dumps(DEFAULT_SETTINGS))
+        save(defaults)
+        return defaults
 
 
 def save(settings):
@@ -121,7 +81,6 @@ def update(partial):
         "ngWords": partial.get("ngWords") if isinstance(partial.get("ngWords"), list) else current["ngWords"],
         "ngUsers": partial.get("ngUsers") if isinstance(partial.get("ngUsers"), list) else current["ngUsers"],
         "overlay": sanitize_overlay({**current["overlay"], **partial["overlay"]}) if partial.get("overlay") else current["overlay"],
-        "presets": sanitize_presets(partial["presets"]) if partial.get("presets") else current["presets"],
     }
     save(current)
     return current

@@ -9,6 +9,7 @@ from aiohttp import web, WSMsgType
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import settings
+import templates
 from adapters.youtube import YouTubeAdapter
 from adapters.twitch import TwitchAdapter
 
@@ -42,8 +43,6 @@ async def start_adapter(platform, url):
     await stop_adapter(platform)
     adapter_class = ADAPTER_CLASSES.get(platform)
     if not adapter_class:
-        if platform == "douyin":
-            raise ValueError("Douyin is not supported in this build — use the Node/Chatterbox Overlay.exe version")
         raise ValueError(f"Unknown platform: {platform}")
 
     message_counts[platform] = 0
@@ -106,6 +105,34 @@ async def handle_post_settings(request):
     return web.json_response(updated)
 
 
+async def handle_get_templates(request):
+    return web.json_response(templates.list_templates())
+
+
+async def handle_post_templates(request):
+    reader = await request.multipart()
+    field = await reader.next()
+    if field is None:
+        return web.json_response({"error": "No file uploaded"}, status=400)
+    zip_bytes = await field.read(decode=False)
+    try:
+        manifest = templates.import_template(zip_bytes)
+        return web.json_response(manifest)
+    except ValueError as err:
+        return web.json_response({"error": str(err)}, status=400)
+
+
+async def handle_delete_template(request):
+    template_id = request.match_info["id"]
+    if settings.get()["overlay"]["templateId"] == template_id:
+        return web.json_response({"error": "Cannot delete the currently selected template"}, status=400)
+    try:
+        templates.delete_template(template_id)
+        return web.json_response({"ok": True})
+    except ValueError as err:
+        return web.json_response({"error": str(err)}, status=400)
+
+
 async def handle_ws(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
@@ -126,12 +153,17 @@ def create_app():
     app.router.add_get("/api/status", handle_status)
     app.router.add_get("/api/settings", handle_get_settings)
     app.router.add_post("/api/settings", handle_post_settings)
+    app.router.add_get("/api/templates", handle_get_templates)
+    app.router.add_post("/api/templates", handle_post_templates)
+    app.router.add_delete("/api/templates/{id}", handle_delete_template)
     app.router.add_get("/ws", handle_ws)
+    app.router.add_static("/templates", templates.TEMPLATES_DIR, show_index=False)
     app.router.add_static("/", PUBLIC_DIR, show_index=False)
     return app
 
 
 def run_server():
+    templates.ensure_seeded()
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     app = create_app()
@@ -146,14 +178,15 @@ def main():
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
 
-    url = f"http://localhost:{PORT}/control.html"
+    url = f"http://localhost:{PORT}/control/control.html"
+    template_id = settings.get()["overlay"]["templateId"]
     print(f"Chatterbox Overlay running at http://localhost:{PORT}")
-    print(f"  Control panel: http://localhost:{PORT}/control.html")
-    print(f"  OBS overlay:   http://localhost:{PORT}/overlay.html")
+    print(f"  Control panel: http://localhost:{PORT}/control/control.html")
+    print(f"  OBS overlay:   http://localhost:{PORT}/templates/{template_id}/index.html")
 
     if getattr(sys, "frozen", False):
         import webview
-        webview.create_window("Chatterbox Overlay", url, width=800, height=600)
+        webview.create_window("Chatterbox Overlay", url, width=1000, height=700)
         webview.start()
         os._exit(0)
     else:

@@ -1,0 +1,30 @@
+  @media (max-width: 860px) {
+    .sidebar { width: 85vw; max-width: 320px; }
+    .main, .main.chat-collapsed { padding: 18px; }
+    .chat-float {
+      left: auto !important;
+      right: 12px !important;
+      top: auto !important;
+      bottom: 12px !important;
+      width: min(320px, calc(100vw - 24px)) !important;
+      height: 50vh;
+    }
+    .chat-dock-bar { left: auto; right: 12px; width: auto; justify-content: center; }
+  }
+
+  @media (max-width: 480px) {
+    .main, .main.chat-collapsed { padding: 14px; }
+    .btn-connect .btn-label,
+    .btn-stop .btn-label,
+    .btn-save .btn-label,
+    .btn-copy .btn-label,
+    .btn-test-voice .btn-label,
+    .btn-import .btn-label,
+    .btn-export .btn-label,
+    .btn-clear-log .btn-label {
+      display: inline;
+      margin-left: 5px;
+    }
+    .row { flex-wrap: wrap; }
+    .topbar h1 { font-size: 13px; }
+  }

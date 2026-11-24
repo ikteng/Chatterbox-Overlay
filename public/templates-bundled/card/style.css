@@ -1,0 +1,94 @@
+html, body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+}
+#feed {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px;
+  gap: 5px;
+  box-sizing: border-box;
+  --bubble-font-size: 20px;
+}
+.msg {
+  font-size: var(--bubble-font-size);
+  line-height: 1.35;
+  color: #f0f0f2;
+  animation: slidein 0.25s ease-out;
+  max-width: 100%;
+  word-wrap: break-word;
+  background: rgba(22, 23, 28, 0.82);
+  border-left: 4px solid var(--author-color, #7c5cff);
+  border-radius: 3px;
+  padding: 5px 10px 5px 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+@keyframes slidein {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.msg.fade-out {
+  animation: fadeout 0.6s ease forwards;
+}
+@keyframes fadeout {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+.meta {
+  display: inline-flex;
+  align-items: center;
+}
+.time {
+  display: inline;
+  font-size: 0.7em;
+  opacity: 0.5;
+  margin-right: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.plat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.plat.youtube { background: #ff0000; color: #fff; }
+.plat.twitch { background: #9147ff; color: #fff; }
+.author { font-weight: 700; margin-right: 4px; color: var(--author-color, #7c5cff); }
+.chat-emote {
+  height: 1.3em;
+  vertical-align: middle;
+  margin: -3px 2px;
+}
+.badge-paid {
+  background: #ffcc4d;
+  color: #111;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+body.name-on-top .msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+body.name-on-top .meta {
+  display: flex;
+  align-items: center;
+}
+body.name-on-top .text {
+  display: block;
+}

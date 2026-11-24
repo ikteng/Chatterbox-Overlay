@@ -77,12 +77,25 @@ def parse_actions(actions, seen):
         author = (renderer.get("authorName") or {}).get("simpleText") or "Unknown"
         runs = (renderer.get("message") or {}).get("runs") or []
         parts = []
+        message_parts = []
         for r in runs:
             if "text" in r:
                 parts.append(r["text"])
+                message_parts.append({"type": "text", "text": r["text"]})
             elif "emoji" in r:
-                shortcuts = (r.get("emoji") or {}).get("shortcuts") or []
-                parts.append(shortcuts[0] if shortcuts else "")
+                emoji = r.get("emoji") or {}
+                shortcuts = emoji.get("shortcuts") or []
+                fallback = shortcuts[0] if shortcuts else (emoji.get("emojiId") or "")
+                thumbs = (emoji.get("image") or {}).get("thumbnails") or []
+                image_url = thumbs[-1]["url"] if thumbs else None
+                if emoji.get("isCustomEmoji"):
+                    parts.append(fallback)
+                    message_parts.append({"type": "emote", "text": fallback, "url": image_url})
+                else:
+                    # emojiId is the literal Unicode glyph for standard emoji.
+                    glyph = emoji.get("emojiId") or ""
+                    parts.append(glyph)
+                    message_parts.append({"type": "text", "text": glyph})
         message = "".join(parts)
 
         badge = None
@@ -96,6 +109,7 @@ def parse_actions(actions, seen):
             "id": msg_id,
             "author": author,
             "message": message,
+            "messageParts": message_parts,
             "color": None,
             "badge": badge,
             "isPaid": bool(item.get("liveChatPaidMessageRenderer")),
@@ -173,12 +187,15 @@ class YouTubeAdapter:
                     conts = cont_actions.get("continuations") or []
                     cont = conts[0] if conts else None
                     next_cont = None
+                    is_invalidation = False
                     if cont:
+                        invalidation = cont.get("invalidationContinuationData")
                         next_cont = (
-                            cont.get("invalidationContinuationData")
+                            invalidation
                             or cont.get("timedContinuationData")
                             or cont.get("reloadContinuationData")
                         )
+                        is_invalidation = invalidation is not None
                     if not next_cont:
                         self.on_status("error", "YouTube chat ended (no continuation)")
                         self.running = False
@@ -186,7 +203,13 @@ class YouTubeAdapter:
 
                     self.continuation = next_cont["continuation"]
                     delay = next_cont.get("timeoutMs") or 1500
-                    await asyncio.sleep(max(delay, 1000) / 1000)
+                    if is_invalidation:
+                        # invalidationContinuationData's timeoutMs is a "come back by"
+                        # ceiling, not a mandated wait — poll much sooner for low latency.
+                        delay = min(delay, 250)
+                    else:
+                        delay = max(delay, 1000)
+                    await asyncio.sleep(delay / 1000)
                 except Exception as err:
                     self.on_status("error", f"YouTube poll error: {err}")
                     await asyncio.sleep(3)

@@ -1,0 +1,214 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Chatterbox Overlay — Control Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="base.css" />
+<link rel="stylesheet" href="layout.css" />
+<link rel="stylesheet" href="platform-cards.css" />
+<link rel="stylesheet" href="settings.css" />
+<link rel="stylesheet" href="theme-gallery.css" />
+<link rel="stylesheet" href="chat-log.css" />
+<link rel="stylesheet" href="responsive.css" />
+</head>
+<body>
+  <div class="topbar">
+    <button class="hamburger-btn" id="hamburger-btn" title="Open menu" aria-label="Open menu"><iconify-icon class="icon" icon="mdi:menu"></iconify-icon></button>
+    <h1>Chatterbox Overlay</h1>
+    <div class="status-pills" id="status-pills">
+      <span class="status-pill" data-platform="youtube"><span class="dot"></span> YouTube</span>
+      <span class="status-pill" data-platform="twitch"><span class="dot"></span> Twitch</span>
+    </div>
+  </div>
+
+  <div class="layout">
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-brand">
+        <span class="sidebar-logo"><iconify-icon class="icon" icon="mdi:chat-processing"></iconify-icon></span>
+        <span class="sidebar-title">Chatterbox Overlay</span>
+      </div>
+      <button class="drawer-close-btn" id="drawer-close-btn" title="Close menu" aria-label="Close menu"><iconify-icon class="icon" icon="mdi:close"></iconify-icon></button>
+    </div>
+    <div class="sub">Free unified chat for YouTube / Twitch. No API keys or login needed.</div>
+
+    <nav class="tabs">
+      <span class="tabs-label">Menu</span>
+      <button class="tab-btn active" data-tab="sources"><iconify-icon class="icon" icon="mdi:access-point"></iconify-icon><span class="btn-label">Sources</span></button>
+      <button class="tab-btn" data-tab="design"><iconify-icon class="icon" icon="mdi:palette-swatch"></iconify-icon><span class="btn-label">Design</span></button>
+      <button class="tab-btn" data-tab="overlay"><iconify-icon class="icon" icon="mdi:monitor-screenshot"></iconify-icon><span class="btn-label">Overlay</span></button>
+      <button class="tab-btn" data-tab="filters"><iconify-icon class="icon" icon="mdi:filter-variant"></iconify-icon><span class="btn-label">Filters</span></button>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="tab-panel active" data-tab="sources">
+      <div class="platform-card" data-platform="youtube">
+        <div class="platform-card-head">
+          <span class="platform-icon platform-icon--youtube"><iconify-icon class="icon" icon="mdi:youtube"></iconify-icon></span>
+          <div class="platform-card-title">
+            <h3>YouTube Live</h3>
+            <div class="status-text"><span class="dot"></span> Not connected</div>
+          </div>
+          <span class="count-badge">0 msgs</span>
+        </div>
+        <div class="field-group">
+          <label>Stream or video URL</label>
+          <input type="text" placeholder="https://www.youtube.com/watch?v=..." data-url />
+        </div>
+        <div class="row">
+          <button class="btn-connect"><iconify-icon class="icon" icon="mdi:link-variant"></iconify-icon><span class="btn-label">Connect</span></button>
+          <button class="btn-stop" title="Stop" aria-label="Stop"><iconify-icon class="icon" icon="mdi:stop"></iconify-icon></button>
+        </div>
+      </div>
+
+      <div class="platform-card" data-platform="twitch">
+        <div class="platform-card-head">
+          <span class="platform-icon platform-icon--twitch"><iconify-icon class="icon" icon="mdi:twitch"></iconify-icon></span>
+          <div class="platform-card-title">
+            <h3>Twitch</h3>
+            <div class="status-text"><span class="dot"></span> Not connected</div>
+          </div>
+          <span class="count-badge">0 msgs</span>
+        </div>
+        <div class="field-group">
+          <label>Channel URL</label>
+          <input type="text" placeholder="https://www.twitch.tv/channelname" data-url />
+        </div>
+        <div class="row">
+          <button class="btn-connect"><iconify-icon class="icon" icon="mdi:link-variant"></iconify-icon><span class="btn-label">Connect</span></button>
+          <button class="btn-stop" title="Stop" aria-label="Stop"><iconify-icon class="icon" icon="mdi:stop"></iconify-icon></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-tab="design">
+      <div class="design-layout">
+        <div class="design-col-controls">
+          <button class="btn-import-template" id="btn-import-template"><iconify-icon class="icon" icon="mdi:file-upload-outline"></iconify-icon><span class="btn-label">Import template (.zip)</span></button>
+          <input type="file" id="template-file-input" accept=".zip" style="display:none;" />
+
+          <div class="theme-gallery" id="theme-gallery"></div>
+
+          <div class="inline-opts" style="margin-bottom:10px;">
+            <input type="checkbox" id="opt-name-on-top" />
+            <span>Show name on its own line above the message</span>
+          </div>
+
+          <div class="save-note" id="save-note-design"></div>
+        </div>
+
+        <div class="design-col-preview">
+          <label class="design-preview-label">Live preview</label>
+          <iframe class="preview-frame" id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-tab="overlay">
+      <div class="settings-card">
+        <h3>Overlay settings</h3>
+
+        <label>Max messages shown</label>
+        <input type="text" id="opt-max" value="20" />
+
+        <label>Auto-fade after (ms, 0 = never)</label>
+        <input type="text" id="opt-lifetime" value="0" />
+
+        <div class="inline-opts" style="margin-top:10px;">
+          <input type="checkbox" id="opt-tts" />
+          <span>Enable text-to-speech</span>
+        </div>
+
+        <div class="label-row">
+          <label>TTS voice</label>
+          <button class="btn-test-voice" id="btn-test-voice"><iconify-icon class="icon" icon="mdi:volume-high"></iconify-icon><span class="btn-label">Test voice</span></button>
+        </div>
+        <select id="opt-voice">
+          <option value="">Browser default (auto-match language)</option>
+        </select>
+
+        <label>TTS speed</label>
+        <select id="opt-rate">
+          <option value="0.25">0.25x</option>
+          <option value="0.5">0.5x</option>
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>1x</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="1.75">1.75x</option>
+          <option value="2">2x</option>
+        </select>
+
+        <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
+        <div class="save-note" id="save-note"></div>
+      </div>
+
+      <div class="links">
+        <div style="margin-bottom:6px;"><strong>OBS overlay (Browser Source):</strong></div>
+        <div class="link-row">
+          <a href="#" target="_blank" id="overlay-link"></a>
+          <button class="btn-copy" id="btn-copy-link"><iconify-icon class="icon" icon="mdi:content-copy"></iconify-icon><span class="btn-label">Copy</span></button>
+        </div>
+        <div style="margin-top:8px; color: var(--muted);">Add as a Browser Source in OBS. Enable "Control audio via OBS" if you turn on TTS. Settings are saved to the server, so this link also works without any query params — just save above.</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-tab="filters">
+      <div class="settings-card">
+        <h3>Filters (NG words / users)</h3>
+        <label>Blocked words (one per line, substring match)</label>
+        <textarea id="opt-ngwords"></textarea>
+        <div class="row" style="margin-top:6px;">
+          <button class="btn-import" data-target="ngwords"><iconify-icon class="icon" icon="mdi:file-upload-outline"></iconify-icon><span class="btn-label">Import .txt</span></button>
+          <button class="btn-export" data-target="ngwords"><iconify-icon class="icon" icon="mdi:file-download-outline"></iconify-icon><span class="btn-label">Export .txt</span></button>
+        </div>
+
+        <label>Blocked usernames (one per line)</label>
+        <textarea id="opt-ngusers"></textarea>
+        <div class="row" style="margin-top:6px;">
+          <button class="btn-import" data-target="ngusers"><iconify-icon class="icon" icon="mdi:file-upload-outline"></iconify-icon><span class="btn-label">Import .txt</span></button>
+          <button class="btn-export" data-target="ngusers"><iconify-icon class="icon" icon="mdi:file-download-outline"></iconify-icon><span class="btn-label">Export .txt</span></button>
+        </div>
+        <input type="file" id="file-import" accept=".txt,text/plain" style="display:none;" />
+
+        <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
+        <div class="save-note" id="save-note-filters"></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="chat-float" id="chat-float">
+    <div class="chat-header" id="chat-drag-handle">
+      <iconify-icon class="icon drag-icon" icon="mdi:drag"></iconify-icon>
+      <h2>Live chat</h2>
+      <button class="chat-collapse-btn" id="chat-collapse-btn" title="Collapse to bottom" aria-label="Collapse to bottom"><iconify-icon class="icon" icon="mdi:chevron-down"></iconify-icon></button>
+    </div>
+    <div class="live-overlay">
+      <div class="live-overlay-empty" id="live-overlay-empty">
+        <iconify-icon class="icon" icon="mdi:chat-outline"></iconify-icon>
+        <p>No chat connected yet</p>
+        <span>Connect a source from the menu to see messages here</span>
+      </div>
+      <iframe class="live-overlay-frame" id="live-overlay-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+    </div>
+  </div>
+
+  <button class="chat-dock-bar" id="chat-dock-bar" hidden>
+    <iconify-icon class="icon" icon="mdi:chevron-up"></iconify-icon>
+    <span>Live Chat</span>
+  </button>
+
+<script src="tabs.js"></script>
+<script src="overlay-settings.js"></script>
+<script src="filters.js"></script>
+<script src="platform-cards.js"></script>
+<script src="websocket.js"></script>
+</body>
+</html>
