@@ -1,4 +1,4 @@
-// Shared rendering logic for the bundled templates (pill/classic/minimal/terminal/etc).
+// Shared rendering logic for the bundled templates (pill/minimal/etc).
 // Not required by custom-imported templates — they're free to render however they like.
 //
 // Supports two display modes, selected by the "displayMode" overlay setting:
@@ -73,6 +73,7 @@ function placeMessage(div) {
 function appendMessage(msg) {
   const div = document.createElement('div');
   div.className = 'msg';
+  div.style.setProperty('--author-color', msg.color || '#ffd56b');
 
   const metaDiv = document.createElement('div');
   metaDiv.className = 'meta';
@@ -113,6 +114,7 @@ function appendMessage(msg) {
 function appendEvent(evt) {
   const div = document.createElement('div');
   div.className = 'msg event event-' + evt.eventType;
+  div.style.setProperty('--author-color', evt.color || '#ffd56b');
 
   const metaDiv = document.createElement('div');
   metaDiv.className = 'meta';

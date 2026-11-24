@@ -17,10 +17,10 @@ body {
   max-width: 100%;
   word-wrap: break-word;
   background: var(--bubble-bg);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--author-color, rgba(255,255,255,0.08));
   border-radius: 18px;
   padding: 8px 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25), 0 0 10px -4px var(--author-color, transparent);
 }
 @keyframes slidein {
   from { opacity: 0; transform: translateY(14px) scale(0.97); }
@@ -55,7 +55,7 @@ body {
 .plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
 .plat.youtube { background: #ff0000; color: #fff; }
 .plat.twitch { background: #9147ff; color: #fff; }
-.author { font-weight: 700; margin-right: 4px; }
+.author { font-weight: 700; margin-right: 4px; color: var(--author-color, #ffd56b); }
 .chat-emote {
   height: 1.3em;
   vertical-align: middle;

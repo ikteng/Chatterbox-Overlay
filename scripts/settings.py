@@ -28,7 +28,7 @@ DEFAULT_SETTINGS = {
 }
 
 ALERT_LAYOUTS = {"side", "stacked"}
-ALERT_THEMES = {"pill", "classic", "minimal", "terminal", "card", "neon", "kawaii", "cyberpunk", "retro"}
+ALERT_THEMES = {"pill", "minimal", "card", "neon"}
 
 ALERT_EVENT_TYPES = {
     "sub", "resub", "subgift", "submysterygift", "giftpaidupgrade", "anongiftpaidupgrade",

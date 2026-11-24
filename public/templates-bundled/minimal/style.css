@@ -1,5 +1,5 @@
 body {
-  font-family: "Work Sans", -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: "Sora", -apple-system, Segoe UI, Roboto, sans-serif;
 }
 #feed {
   padding: 10px;
@@ -52,7 +52,7 @@ body {
 .plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
 .plat.youtube { color: #ff5c5c; }
 .plat.twitch { color: #b38bff; }
-.author { font-weight: 800; margin-right: 4px; }
+.author { font-weight: 600; margin-right: 4px; color: var(--author-color, #fff); }
 .chat-emote {
   height: 1.3em;
   vertical-align: middle;
@@ -67,8 +67,12 @@ body {
   border-radius: 5px;
   margin-right: 6px;
 }
+.msg.event {
+  border-left: 3px solid #ffcc4d;
+  padding-left: 7px;
+}
 .msg.event .author { color: #ffcc4d; }
-.msg.event .text { font-weight: 800; }
+.msg.event .text { font-weight: 600; }
 .event-quote {
   margin-top: 2px;
   font-weight: 400;

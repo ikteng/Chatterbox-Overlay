@@ -9,16 +9,6 @@ body:not([data-theme]) .alert-card {
   border-radius: 18px;
 }
 
-/* classic — Nunito Sans, flat left-accent bar */
-body[data-theme="classic"] .alert-card {
-  font-family: 'Nunito Sans', -apple-system, Segoe UI, Roboto, sans-serif;
-  background: rgba(14, 14, 18, 0.92);
-  border: none;
-  border-left: 5px solid var(--alert-accent, #ffd56b);
-  border-radius: 6px;
-}
-body[data-theme="classic"] .alert-icon { border-radius: 4px; }
-
 /* minimal — Work Sans, borderless, text-forward */
 body[data-theme="minimal"] .alert-card {
   font-family: 'Work Sans', -apple-system, Segoe UI, Roboto, sans-serif;
@@ -29,21 +19,6 @@ body[data-theme="minimal"] .alert-card {
 }
 body[data-theme="minimal"] .alert-icon { background: transparent; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8)); }
 body[data-theme="minimal"] .alert-title { opacity: 0.6; }
-
-/* terminal — monospace, green CRT */
-body[data-theme="terminal"] .alert-card {
-  font-family: 'Noto Sans Mono', monospace;
-  background: linear-gradient(180deg, rgba(10, 18, 13, 0.92), rgba(6, 12, 9, 0.92));
-  border: 1px solid rgba(90, 255, 150, 0.35);
-  border-left: 3px solid #39ff6a;
-  border-radius: 4px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.45), 0 0 30px rgba(57,255,106,0.25);
-}
-body[data-theme="terminal"] .alert-icon { background: rgba(57,255,106,0.12); border: 1px solid #39ff6a; border-radius: 4px; color: #c9ffd8; }
-body[data-theme="terminal"] .alert-title { color: #39ff6a; opacity: 1; }
-body[data-theme="terminal"] .alert-main { color: #eafff0; }
-body[data-theme="terminal"] .alert-main::before { content: "> "; color: #39ff6a; }
-body[data-theme="terminal"] .alert-sub { color: #bdf5cc; }
 
 /* card — Inter, sharp card with left accent bar */
 body[data-theme="card"] .alert-card {
@@ -66,53 +41,3 @@ body[data-theme="neon"] .alert-card {
 body[data-theme="neon"] .alert-icon { box-shadow: 0 0 16px var(--alert-glow, rgba(255,61,240,0.6)); }
 body[data-theme="neon"] .alert-title { text-shadow: 0 0 6px var(--alert-accent, #ff3df0); }
 body[data-theme="neon"] .alert-main .alert-author { text-shadow: 0 0 8px var(--alert-accent, #ffd56b); }
-
-/* kawaii — Fredoka, pastel pink pop */
-body[data-theme="kawaii"] .alert-card {
-  font-family: 'Fredoka', 'ZCOOL KuaiLe', sans-serif;
-  background: linear-gradient(135deg, #ffd3e8, #ffbfdd);
-  border: 3px solid #ff8fc4;
-  border-radius: 24px;
-  box-shadow: 0 4px 0 #ff8fc4, 0 10px 40px rgba(0,0,0,0.3);
-  color: #4a2340;
-}
-body[data-theme="kawaii"] .alert-icon { background: #fff0f7; color: #ff6fa8; }
-body[data-theme="kawaii"] .alert-title { color: #c77f00; opacity: 1; }
-body[data-theme="kawaii"] .alert-main { color: #4a2340; }
-body[data-theme="kawaii"] .alert-main .alert-author { color: #ff6fa8; }
-body[data-theme="kawaii"] .alert-main .alert-author::after { content: " ♡"; }
-body[data-theme="kawaii"] .alert-sub { color: #5a3a52; opacity: 1; }
-
-/* cyberpunk — Orbitron, clipped angular panel */
-body[data-theme="cyberpunk"] .alert-card {
-  font-family: 'Orbitron', "Microsoft YaHei", "PingFang SC", sans-serif;
-  background: linear-gradient(100deg, rgba(10, 14, 26, 0.92) 0%, rgba(18, 10, 30, 0.92) 100%);
-  border: none;
-  border-top: 1px solid rgba(0, 240, 255, 0.6);
-  border-bottom: 1px solid rgba(255, 0, 180, 0.5);
-  border-radius: 0;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
-  box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.1), 0 10px 40px rgba(0,0,0,0.5);
-}
-body[data-theme="cyberpunk"] .alert-icon { border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%); background: rgba(0,240,255,0.15); color: #00f0ff; }
-body[data-theme="cyberpunk"] .alert-title { color: #00f0ff; opacity: 1; letter-spacing: 0.12em; }
-body[data-theme="cyberpunk"] .alert-main .alert-author { color: #00f0ff; text-shadow: 0 0 6px #00f0ff; }
-body[data-theme="cyberpunk"] .alert-main::after { content: " //"; opacity: 0.5; }
-
-/* retro — DotGothic16, pixel-block border */
-body[data-theme="retro"] .alert-card {
-  font-family: 'DotGothic16', monospace;
-  image-rendering: pixelated;
-  background: #2a2140;
-  border: 3px solid #fff8e8;
-  border-radius: 0;
-  box-shadow:
-    inset 0 0 0 2px #2a2140,
-    inset 0 0 0 4px #ff6ec7,
-    6px 6px 0 rgba(0,0,0,0.5);
-  color: #fff8e8;
-}
-body[data-theme="retro"] .alert-icon { border-radius: 0; border: 2px solid #fff8e8; background: #ff6ec7; }
-body[data-theme="retro"] .alert-title { color: #7ef9c5; opacity: 1; }
-body[data-theme="retro"] .alert-main { color: #fff8e8; }
-body[data-theme="retro"] .alert-sub { color: #fff8e8; opacity: 0.85; }

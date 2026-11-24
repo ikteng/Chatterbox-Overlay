@@ -28,21 +28,21 @@ const queue = [];
 let showing = false;
 
 const PRESETS = {
-  sub: { title: 'New Subscriber', glow: 'rgba(145, 70, 255, 0.55)', accent: '#c9a6ff', icon: '⭐' },
-  resub: { title: 'Resubscribed', glow: 'rgba(145, 70, 255, 0.55)', accent: '#c9a6ff', icon: '⭐' },
-  subgift: { title: 'Gift Sub', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: '🎁' },
-  submysterygift: { title: 'Mystery Gift Subs', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: '🎁' },
-  giftpaidupgrade: { title: 'Gift Upgraded', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: '🎁' },
-  anongiftpaidupgrade: { title: 'Gift Upgraded', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: '🎁' },
-  raid: { title: 'Raid!', glow: 'rgba(255, 170, 60, 0.55)', accent: '#ffd08a', icon: '🚀' },
-  membership: { title: 'New Member', glow: 'rgba(90, 200, 255, 0.55)', accent: '#9fe3ff', icon: '💎' },
-  giftMembershipPurchase: { title: 'Gift Memberships', glow: 'rgba(90, 200, 255, 0.55)', accent: '#9fe3ff', icon: '🎁' },
-  giftMembershipRedeemed: { title: 'Membership Redeemed', glow: 'rgba(90, 200, 255, 0.55)', accent: '#9fe3ff', icon: '💎' },
-  paidSticker: { title: 'Super Sticker', glow: 'rgba(255, 210, 60, 0.55)', accent: '#ffe79a', icon: '💰' },
+  sub: { title: 'New Subscriber', glow: 'rgba(145, 70, 255, 0.55)', accent: '#c9a6ff', icon: 'mdi:star' },
+  resub: { title: 'Resubscribed', glow: 'rgba(145, 70, 255, 0.55)', accent: '#c9a6ff', icon: 'mdi:star' },
+  subgift: { title: 'Gift Sub', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: 'mdi:gift' },
+  submysterygift: { title: 'Mystery Gift Subs', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: 'mdi:gift' },
+  giftpaidupgrade: { title: 'Gift Upgraded', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: 'mdi:gift' },
+  anongiftpaidupgrade: { title: 'Gift Upgraded', glow: 'rgba(255, 110, 180, 0.55)', accent: '#ffb0d8', icon: 'mdi:gift' },
+  raid: { title: 'Raid!', glow: 'rgba(255, 170, 60, 0.55)', accent: '#ffd08a', icon: 'mdi:rocket-launch' },
+  membership: { title: 'New Member', glow: 'rgba(90, 200, 255, 0.55)', accent: '#9fe3ff', icon: 'mdi:diamond-stone' },
+  giftMembershipPurchase: { title: 'Gift Memberships', glow: 'rgba(90, 200, 255, 0.55)', accent: '#9fe3ff', icon: 'mdi:gift' },
+  giftMembershipRedeemed: { title: 'Membership Redeemed', glow: 'rgba(90, 200, 255, 0.55)', accent: '#9fe3ff', icon: 'mdi:diamond-stone' },
+  paidSticker: { title: 'Super Sticker', glow: 'rgba(255, 210, 60, 0.55)', accent: '#ffe79a', icon: 'mdi:cash' },
 };
 
 function presetFor(evt) {
-  return PRESETS[evt.eventType] || { title: evt.eventType || 'Event', glow: 'rgba(150, 90, 255, 0.45)', accent: '#ffd56b', icon: '🔔' };
+  return PRESETS[evt.eventType] || { title: evt.eventType || 'Event', glow: 'rgba(150, 90, 255, 0.45)', accent: '#ffd56b', icon: 'mdi:bell' };
 }
 
 function mainLine(evt, preset) {
@@ -110,7 +110,9 @@ function renderCard(evt) {
     img.className = 'alert-sticker';
     icon.appendChild(img);
   } else {
-    icon.textContent = preset.icon;
+    const iconEl = document.createElement('iconify-icon');
+    iconEl.setAttribute('icon', preset.icon);
+    icon.appendChild(iconEl);
   }
   card.appendChild(icon);
 

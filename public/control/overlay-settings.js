@@ -197,7 +197,7 @@ function pushSampleMessage() {
 
 // Auto-loop: continuously feeds sample messages into the preview so the OBS
 // overlay preview always shows something moving, without needing clicks.
-const startSamplePreviewLoop = startPreviewLoop(() => { sampleIndex = 0; pushSampleMessage(); }, 2800);
+const startSamplePreviewLoop = startPreviewLoop(pushSampleMessage, 2800);
 
 previewFrame.addEventListener('load', () => {
   // Push the panel's current unsaved overlay settings into the preview so
@@ -206,6 +206,7 @@ previewFrame.addEventListener('load', () => {
   if (frameWin && typeof frameWin.applyPreviewConfig === 'function') {
     frameWin.applyPreviewConfig(currentOverlaySettings());
   }
+  sampleIndex = 0;
   startSamplePreviewLoop();
 });
 

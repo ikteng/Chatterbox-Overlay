@@ -13,7 +13,7 @@ Both normalize into one message format and stream over a local WebSocket to:
 - a **control panel** (`control.html`) to connect/disconnect each platform and watch the unified log
 - an **OBS overlay** — a transparent browser-source page you drop into OBS.
 
-The overlay's look comes from a **template**: a self-contained HTML/CSS/JS package, OneComme-style. Nine templates ship built in (Pill, Classic, Minimal, Terminal, Card, Neon, Kawaii, Cyberpunk, Retro), and you can import your own as a `.zip`. Any of them can also switch to a **scrolling (Danmaku-style) display mode**, where messages fly across the screen bullet-comment style instead of stacking in a list.
+The overlay's look comes from a **template**: a self-contained HTML/CSS/JS package, OneComme-style. Four templates ship built in (Pill, Minimal, Card, Neon), and you can import your own as a `.zip`. Any of them can also switch to a **scrolling (Danmaku-style) display mode**, where messages fly across the screen bullet-comment style instead of stacking in a list.
 
 ## Setup
 

@@ -68,6 +68,7 @@ body[data-alert-show-icon="false"] .alert-icon {
   align-items: center;
   justify-content: center;
   font-size: 28px;
+  color: #fff;
   background: var(--alert-glow, rgba(150, 90, 255, 0.45));
 }
 

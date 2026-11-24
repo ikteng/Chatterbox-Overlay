@@ -19,17 +19,12 @@ function alertOverlayPath() {
 // ---- Alert theme gallery ----
 // Alerts have their own fixed set of skins (not the dynamic/importable chat
 // template list) because a custom-imported chat template has no matching
-// alert-box CSS — only these 9 built-in looks are implemented in themes.css.
+// alert-box CSS — only these built-in looks are implemented in themes.css.
 const ALERT_THEMES = [
   { id: 'pill', name: 'Pill', icon: 'mdi:rounded-corner' },
-  { id: 'classic', name: 'Classic', icon: 'mdi:message-text-outline' },
   { id: 'minimal', name: 'Minimal', icon: 'mdi:minus' },
-  { id: 'terminal', name: 'Terminal', icon: 'mdi:console' },
   { id: 'card', name: 'Card', icon: 'mdi:card-text-outline' },
   { id: 'neon', name: 'Neon', icon: 'mdi:lightning-bolt-outline' },
-  { id: 'kawaii', name: 'Kawaii', icon: 'mdi:cat' },
-  { id: 'cyberpunk', name: 'Cyberpunk', icon: 'mdi:chip' },
-  { id: 'retro', name: 'Retro', icon: 'mdi:gamepad-variant' },
 ];
 const alertThemeGallery = document.getElementById('alert-theme-gallery');
 let currentAlertThemeId = 'pill';
@@ -127,9 +122,10 @@ btnTestAlert.addEventListener('click', pushSampleAlert);
 
 // Auto-loop: continuously feeds sample alerts into the preview so this tab's
 // iframe always shows something, matching the Design tab's chat preview loop.
-const startAlertPreviewLoop = startPreviewLoop(() => { alertSampleIndex = 0; pushSampleAlert(); }, 4200);
+const startAlertPreviewLoop = startPreviewLoop(pushSampleAlert, 4200);
 alertPreviewFrame.addEventListener('load', () => {
   pushAlertPreviewConfig();
+  alertSampleIndex = 0;
   startAlertPreviewLoop();
 });
 
