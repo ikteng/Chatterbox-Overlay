@@ -20,13 +20,12 @@
     white-space: nowrap;
   }
   .btn-copy.copied { background: var(--green); color: #06251a; }
-  .btn-test-voice, .btn-import, .btn-export {
+  .btn-import, .btn-export {
     background: var(--panel-raised);
     color: var(--text);
     border: 1px solid var(--border);
+    flex: 1;
   }
-  .btn-import, .btn-export { flex: 1; }
-  .btn-test-voice.playing { background: var(--accent); color: white; border-color: transparent; }
   .preview-frame {
     width: 100%;
     height: 100%;
@@ -40,7 +39,7 @@
   .design-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 20px;
+    gap: 40px;
     align-items: start;
     width: 100%;
   }
@@ -86,14 +85,5 @@
     margin: 12px 0 5px;
   }
   .settings-card label:first-of-type { margin-top: 0; }
-  .label-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 12px 0 5px;
-  }
-  .label-row label { margin: 0; }
-  .label-row .btn-test-voice { padding: 4px 10px; font-size: 11px; }
-  .label-row .btn-test-voice .icon { margin-right: 4px; font-size: 13px; }
   .btn-save { background: var(--accent); color: white; width: 100%; margin-top: 12px; }
   .save-note { font-size: 11.5px; color: var(--green); margin-top: 8px; min-height: 14px; font-weight: 600; }

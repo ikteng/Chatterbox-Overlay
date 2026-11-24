@@ -9,7 +9,7 @@ Free, local, unified chat overlay for YouTube and Twitch live streams — no API
 
 Both normalize into one message format and stream over a local WebSocket to:
 - a **control panel** (`control.html`) to connect/disconnect each platform and watch the unified log
-- an **OBS overlay** — a transparent browser-source page you drop into OBS, with optional built-in text-to-speech (uses the browser's own voice, no setup).
+- an **OBS overlay** — a transparent browser-source page you drop into OBS.
 
 The overlay's look comes from a **template**: a self-contained HTML/CSS/JS package, OneComme-style. Four templates ship built in (Pill, Classic, Minimal, Terminal), and you can import your own as a `.zip`.
 
@@ -37,7 +37,7 @@ The packaged app (`dist/ChatterboxOverlay.exe`) opens its own native window via 
 The control panel (`control.html`) is organized into four tabs:
 - **Sources** — connect/disconnect YouTube and Twitch, with a live status dot and running message count per platform.
 - **Design** — pick a template from the gallery (or import your own `.zip`), with a live preview. Templates own their entire look — there's no separate color/bubble styling to configure.
-- **Overlay** — max messages, auto-fade, and TTS settings, plus a one-click copy button for the overlay URL.
+- **Overlay** — max messages and auto-fade settings, plus a one-click copy button for the overlay URL.
 - **Filters** — NG word/username lists.
 
 All of these are saved to the server (`settings.json`) via "Save settings", so the overlay link for the saved template (shown on the Overlay tab, no query string needed) always reflects your saved configuration — settings persist across restarts and apply even if OBS has cached the URL.
@@ -49,25 +49,24 @@ A template is a folder (or `.zip`) containing:
 - `index.html` — the overlay markup, loaded directly into the overlay iframe/browser source
 - any `style.css`/`script.js`/assets it references itself
 
-`index.html` must load the shared host script (`<script src="/overlay/template-host.js"></script>`) before its own script. The host owns the WebSocket connection, the live-preview sample-message bridge, and TTS, and calls two globals your template's own script defines:
-- `window.onConfigUpdate(cfg)` — called on load and whenever settings change; `cfg` is `{ max, lifetime, tts, voiceName, voiceRate }`
+`index.html` must load the shared host script (`<script src="/overlay/template-host.js"></script>`) before its own script. The host owns the WebSocket connection and the live-preview sample-message bridge, and calls two globals your template's own script defines:
+- `window.onConfigUpdate(cfg)` — called on load and whenever settings change; `cfg` is `{ max, lifetime }`
 - `window.onChatMessage(msg)` — called per chat message: `{ platform, id, author, message, messageParts, color, badge, isPaid, timestamp }`
 
 Zip it up (manifest.json and index.html at the zip root) and import it from the Design tab. Imported templates can be deleted from the gallery at any time (except the one currently selected).
 
 ## Using in OBS
 
-1. Open the **control panel**, pick a template on the **Design** tab and your TTS/etc. on the **Overlay** tab, and click **Save settings**. Use **Copy** next to the link to copy it to your clipboard.
+1. Open the **control panel**, pick a template on the **Design** tab and your settings on the **Overlay** tab, and click **Save settings**. Use **Copy** next to the link to copy it to your clipboard.
 2. Add a **Browser Source** in OBS and paste that link as the URL.
-3. In OBS, check **"Control audio via OBS"** on the browser source if you want to route/mute the TTS audio like any other source.
 
 ## Filtering (NG words / users)
 
-The control panel's "Filters" tab — one blocked word or username per line. Matching messages are dropped server-side before they ever reach the overlay or TTS (substring match, case-insensitive). Settings are saved to `settings.json` next to the app and persist across restarts.
+The control panel's "Filters" tab — one blocked word or username per line. Matching messages are dropped server-side before they ever reach the overlay (substring match, case-insensitive). Settings are saved to `settings.json` next to the app and persist across restarts.
 
 ## Language support
 
-Chat text is passed through as-is (UTF-8), so Chinese, English, and any mixed-language chat display correctly with no configuration. Text-to-speech uses the browser's built-in `speechSynthesis`. By default it auto-picks a voice per-message based on your installed OS voices (e.g. Windows ships Mandarin and English voices out of the box). To pick a specific voice — including higher-quality "Online (Natural)" voices that Edge/Chrome expose when online — use the **TTS voice** dropdown on the Overlay tab; it lists every voice your browser can see, free and with no extra install.
+Chat text is passed through as-is (UTF-8), so Chinese, English, and any mixed-language chat display correctly with no configuration.
 
 ## Notes / limitations
 
