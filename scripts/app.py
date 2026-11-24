@@ -148,6 +148,22 @@ async def handle_reveal_template(request):
         return web.json_response({"error": str(err)}, status=400)
 
 
+SHARED_CHAT_TEMPLATE = os.path.join(PUBLIC_DIR, "overlay", "chat", "chat-template.html")
+
+
+async def handle_template_index(request):
+    template_id = request.match_info["id"]
+    if any(c in template_id for c in ("/", "\\", "..")):
+        raise web.HTTPNotFound()
+    folder = os.path.join(templates.TEMPLATES_DIR, template_id)
+    if not os.path.isdir(folder):
+        raise web.HTTPNotFound()
+    own_index = os.path.join(folder, "index.html")
+    if templates.has_custom_html(folder):
+        return web.FileResponse(own_index)
+    return web.FileResponse(SHARED_CHAT_TEMPLATE)
+
+
 async def handle_ws(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
@@ -180,6 +196,7 @@ def create_app():
     app.router.add_delete("/api/templates/{id}", handle_delete_template)
     app.router.add_post("/api/templates/{id}/reveal", handle_reveal_template)
     app.router.add_get("/ws", handle_ws)
+    app.router.add_get("/templates/{id}/index.html", handle_template_index)
     app.router.add_static("/templates", templates.TEMPLATES_DIR, show_index=False)
     app.router.add_static("/", PUBLIC_DIR, show_index=False)
     return app

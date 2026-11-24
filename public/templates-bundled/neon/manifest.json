@@ -1,5 +1,6 @@
 {
   "id": "neon",
   "name": "Neon",
-  "icon": "mdi:lightning-bolt-outline"
+  "icon": "mdi:lightning-bolt-outline",
+  "font": "Rajdhani:wght@500;700"
 }

@@ -1,0 +1,144 @@
+/* ============================================================
+   STARTER THEME — copy this folder, rename it, and edit freely.
+   See ../THEME_AUTHORING.md for the full writeup of this contract.
+
+   You only style APPEARANCE here (colors, fonts, shape, spacing,
+   animation). Positioning (scroll vs. stacked layout, where the
+   feed sits on screen) is handled by the app and should not be
+   touched.
+   ============================================================ */
+
+/* Base font for the whole overlay. Swap "Quicksand" for whatever
+   you set in manifest.json's "font" field (or delete the "font"
+   field and just pick a safe system font here instead). */
+body {
+  font-family: "Quicksand", -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* #feed is the scrolling/stacking container all messages live in.
+   Tune spacing here; don't touch position/size (that's the app's job). */
+#feed {
+  padding: 12px;
+  gap: 8px;
+}
+
+/* .msg is the outer box for ONE chat message. Every message gets
+   this class, plus an inline custom property:
+     --author-color: <the chatter's name color, e.g. "#ffd56b">
+   Use var(--author-color) to theme per-user accents (borders, glow). */
+.msg {
+  background: rgba(20, 20, 26, 0.75);
+  border: 1px solid var(--author-color, rgba(255, 255, 255, 0.12));
+  border-radius: 10px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.35;
+  word-wrap: break-word;
+}
+
+/* .meta wraps the row of icons/name above the message text:
+   time, platform icon, paid badge (if any), author name. */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+/* .time — the message's local timestamp, e.g. "3:45 PM".
+   Many themes just hide this; uncomment to show it. */
+.time {
+  display: none;
+  /* display: inline; */
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* .plat — the platform icon (YouTube/Twitch SVG), also carries a
+   platform-specific class: .plat.youtube or .plat.twitch. */
+.plat {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+}
+.plat svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* .badge-paid — only present on paid/superchat-style messages.
+   msg.amount (e.g. "$5") is the text content. */
+.badge-paid {
+  background: #ffd56b;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+/* .author — the chatter's display name. Comes with an inline
+   style="color: ..." already set to their name color; override
+   it here if you want every name the same color instead. */
+.author {
+  font-weight: 700;
+}
+
+/* .text — the message body itself. May contain <img class="chat-emote">
+   inline for emotes — size those so they don't blow up line height. */
+.text {
+  display: block;
+}
+.chat-emote {
+  height: 1.4em;
+  vertical-align: middle;
+}
+
+/* ----- Events (follows/subs/donations/etc.) -----
+   Events reuse .msg but add .event plus a type-specific class,
+   e.g. .event-follow, .event-sub, .event-donation. Target .event
+   for shared event styling, or an .event-{type} class for a
+   specific one. */
+.msg.event {
+  border-style: dashed;
+}
+
+/* .event-quote — only present when an event both has a system
+   message (e.g. "SomeUser donated $5") AND a quoted chat message
+   attached to it. */
+.event-quote {
+  margin-top: 4px;
+  padding-left: 8px;
+  border-left: 2px solid var(--author-color, #888);
+  opacity: 0.85;
+  font-size: 0.9em;
+}
+
+/* .event-sticker — only present when the event carries an image
+   (e.g. a donation sticker). */
+.event-sticker {
+  max-height: 64px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ----- Enter/exit animation -----
+   base-template.js adds/removes .fade-out when a message expires
+   (only if the "message lifetime" setting is enabled) — animate
+   that transition here. The initial appearance of a .msg can be
+   animated directly via its own "animation" property. */
+.msg {
+  animation: msg-in 0.25s ease-out;
+}
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.msg.fade-out {
+  animation: msg-out 0.5s ease forwards;
+}
+@keyframes msg-out {
+  to { opacity: 0; }
+}

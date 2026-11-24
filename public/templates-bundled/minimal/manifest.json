@@ -1,5 +1,6 @@
 {
   "id": "minimal",
   "name": "Minimal",
-  "icon": "mdi:minus"
+  "icon": "mdi:minus",
+  "font": "Sora:wght@400;600"
 }

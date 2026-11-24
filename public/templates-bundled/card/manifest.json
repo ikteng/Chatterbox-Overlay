@@ -1,5 +1,6 @@
 {
   "id": "card",
   "name": "Card",
-  "icon": "mdi:card-text-outline"
+  "icon": "mdi:card-text-outline",
+  "font": "Inter:wght@500;700"
 }

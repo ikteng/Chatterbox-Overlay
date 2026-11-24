@@ -1,5 +1,6 @@
 {
   "id": "pill",
   "name": "Pill",
-  "icon": "mdi:rounded-corner"
+  "icon": "mdi:rounded-corner",
+  "font": "Quicksand:wght@500;700"
 }

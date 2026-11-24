@@ -1,0 +1,6 @@
+{
+  "id": "my-theme",
+  "name": "My Theme",
+  "icon": "mdi:monitor-screenshot",
+  "font": "Quicksand:wght@500;700"
+}

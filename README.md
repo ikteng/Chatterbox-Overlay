@@ -75,4 +75,3 @@ Chat text is passed through as-is (UTF-8), so Chinese, English, and any mixed-la
 
 - This has to stay running locally (dev mode or the packaged .exe) while you stream — it's not a hosted service.
 - YouTube relies on scraping a public page/endpoint; if YouTube changes its site structure, the adapter may need updating.
-- Douyin is not supported in this build.

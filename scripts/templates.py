@@ -17,7 +17,17 @@ else:
     BUNDLED_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public", "templates-bundled")
 
 MAX_ZIP_SIZE = 10 * 1024 * 1024
-REQUIRED_FILES = ("index.html", "manifest.json")
+
+# A template folder is either "simple" (manifest.json + style.css, rendered
+# through the shared public/overlay/chat/chat-template.html host) or "custom"
+# (ships its own index.html with arbitrary markup/rendering logic, e.g. a
+# user-imported .zip). list_templates()/has_custom_html() below tell them apart.
+
+
+# Lives under BUNDLED_DIR as a copy-paste starting point for theme authors
+# (see THEME_AUTHORING.md) — not a selectable theme, so it's excluded from
+# both seeding into the user's templates/ dir and the gallery listing.
+STARTER_THEME_DIR = "starter-theme"
 
 
 def ensure_seeded():
@@ -25,6 +35,8 @@ def ensure_seeded():
     if not os.path.isdir(BUNDLED_DIR):
         return
     for entry in os.listdir(BUNDLED_DIR):
+        if entry == STARTER_THEME_DIR:
+            continue
         src = os.path.join(BUNDLED_DIR, entry)
         dst = os.path.join(TEMPLATES_DIR, entry)
         if os.path.isdir(src) and not os.path.exists(dst):
@@ -43,6 +55,10 @@ def _read_manifest(folder):
         return None
 
 
+def has_custom_html(folder):
+    return os.path.isfile(os.path.join(folder, "index.html"))
+
+
 def list_templates():
     result = []
     if not os.path.isdir(TEMPLATES_DIR):
@@ -51,7 +67,7 @@ def list_templates():
         folder = os.path.join(TEMPLATES_DIR, entry)
         if not os.path.isdir(folder):
             continue
-        if not os.path.isfile(os.path.join(folder, "index.html")):
+        if not has_custom_html(folder) and not os.path.isfile(os.path.join(folder, "style.css")):
             continue
         manifest = _read_manifest(folder)
         if manifest is None:
@@ -87,8 +103,10 @@ def import_template(zip_bytes):
     names = set(zf.namelist())
     if not any(n == "manifest.json" or n.endswith("/manifest.json") for n in names):
         raise ValueError("Package is missing manifest.json")
-    if not any(n == "index.html" or n.endswith("/index.html") for n in names):
-        raise ValueError("Package is missing index.html")
+    has_index = any(n == "index.html" or n.endswith("/index.html") for n in names)
+    has_style = any(n == "style.css" or n.endswith("/style.css") for n in names)
+    if not has_index and not has_style:
+        raise ValueError("Package must include either index.html or style.css")
 
     os.makedirs(TEMPLATES_DIR, exist_ok=True)
     tmp_dir = os.path.join(TEMPLATES_DIR, "__import_tmp__")
@@ -99,8 +117,10 @@ def import_template(zip_bytes):
     try:
         _safe_extract(zf, tmp_dir)
 
-        if not os.path.isfile(os.path.join(tmp_dir, "manifest.json")) or not os.path.isfile(os.path.join(tmp_dir, "index.html")):
-            raise ValueError("manifest.json and index.html must be at the root of the package")
+        if not os.path.isfile(os.path.join(tmp_dir, "manifest.json")):
+            raise ValueError("manifest.json must be at the root of the package")
+        if not os.path.isfile(os.path.join(tmp_dir, "index.html")) and not os.path.isfile(os.path.join(tmp_dir, "style.css")):
+            raise ValueError("Package must include either index.html or style.css at the root")
 
         manifest = _read_manifest(tmp_dir)
         if manifest is None:
