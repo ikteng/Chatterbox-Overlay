@@ -53,10 +53,15 @@ async def start_adapter(platform, url):
             return
         broadcast("chat", {"message": message, "count": message_counts[platform]})
 
+    def on_event(event):
+        if settings.is_blocked(event):
+            return
+        broadcast("event", {"event": event})
+
     def on_status(status, text):
         broadcast("status", {"platform": platform, "status": status, "text": text})
 
-    adapter = adapter_class(url, on_message, on_status)
+    adapter = adapter_class(url, on_message, on_status, on_event)
     adapters[platform] = adapter
     await adapter.start()
 
@@ -133,6 +138,15 @@ async def handle_delete_template(request):
         return web.json_response({"error": str(err)}, status=400)
 
 
+async def handle_reveal_template(request):
+    template_id = request.match_info["id"]
+    try:
+        templates.reveal_in_explorer(template_id)
+        return web.json_response({"ok": True})
+    except ValueError as err:
+        return web.json_response({"error": str(err)}, status=400)
+
+
 async def handle_ws(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
@@ -146,8 +160,15 @@ async def handle_ws(request):
     return ws
 
 
+@web.middleware
+async def no_cache_middleware(request, handler):
+    response = await handler(request)
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
+
+
 def create_app():
-    app = web.Application()
+    app = web.Application(middlewares=[no_cache_middleware])
     app.router.add_post("/api/connect", handle_connect)
     app.router.add_post("/api/disconnect", handle_disconnect)
     app.router.add_get("/api/status", handle_status)
@@ -156,6 +177,7 @@ def create_app():
     app.router.add_get("/api/templates", handle_get_templates)
     app.router.add_post("/api/templates", handle_post_templates)
     app.router.add_delete("/api/templates/{id}", handle_delete_template)
+    app.router.add_post("/api/templates/{id}/reveal", handle_reveal_template)
     app.router.add_get("/ws", handle_ws)
     app.router.add_static("/templates", templates.TEMPLATES_DIR, show_index=False)
     app.router.add_static("/", PUBLIC_DIR, show_index=False)

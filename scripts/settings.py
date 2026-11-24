@@ -12,6 +12,8 @@ DEFAULT_SETTINGS = {
         "templateId": "pill",
         "max": 20,
         "lifetime": 0,
+        "nameOnTop": False,
+        "displayMode": "stacked",
     },
 }
 
@@ -32,10 +34,13 @@ def sanitize_overlay(o):
     max_val = _as_float(o.get("max"))
     lifetime = _as_float(o.get("lifetime"))
     template_id = o.get("templateId")
+    display_mode = o.get("displayMode")
     return {
         "templateId": template_id if isinstance(template_id, str) and template_id.strip() else base["templateId"],
         "max": max(1, min(100, int(max_val))) if max_val is not None else base["max"],
         "lifetime": max(0, lifetime) if lifetime is not None else base["lifetime"],
+        "nameOnTop": bool(o.get("nameOnTop")),
+        "displayMode": display_mode if display_mode == "scroll" else "stacked",
     }
 
 

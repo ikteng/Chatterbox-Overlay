@@ -1,0 +1,101 @@
+body {
+  font-family: "DotGothic16", monospace;
+  image-rendering: pixelated;
+}
+#feed {
+  padding: 14px;
+  gap: 8px;
+  --bubble-font-size: 16px;
+}
+.msg {
+  position: relative;
+  font-size: var(--bubble-font-size);
+  line-height: 1.6;
+  color: #fff8e8;
+  animation: blockin 0.18s steps(2, end);
+  max-width: 100%;
+  word-wrap: break-word;
+  background: #2a2140;
+  border: 3px solid #fff8e8;
+  box-shadow:
+    inset 0 0 0 2px #2a2140,
+    inset 0 0 0 4px #ff6ec7,
+    4px 4px 0 rgba(0,0,0,0.5);
+  padding: 8px 10px;
+}
+@keyframes blockin {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.msg.fade-out {
+  animation: fadeout 0.4s steps(3, end) forwards;
+}
+@keyframes fadeout {
+  to { opacity: 0; transform: translateY(-6px); }
+}
+.meta {
+  display: inline-flex;
+  align-items: center;
+}
+.time {
+  display: none;
+}
+.plat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 2px;
+  margin-right: 8px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background: #fff8e8;
+  border: 2px solid #2a2140;
+}
+.plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.plat.youtube { color: #ff5a5a; }
+.plat.twitch { color: #8a5aff; }
+.author {
+  font-weight: 400;
+  margin-right: 6px;
+  color: var(--author-color, #7ef9c5);
+}
+.author::after { content: ":"; }
+.text { color: #fff8e8; }
+.chat-emote {
+  height: 1.6em;
+  vertical-align: middle;
+  margin: -4px 2px;
+}
+.badge-paid {
+  background: #ffd36e;
+  color: #2a2140;
+  font-size: 9px;
+  padding: 2px 5px;
+  margin-right: 6px;
+  border: 2px solid #2a2140;
+}
+body.name-on-top .author::after {
+  content: "";
+}
+.msg.event {
+  background: #402a14;
+  box-shadow:
+    inset 0 0 0 2px #402a14,
+    inset 0 0 0 4px #ffcc4d,
+    4px 4px 0 rgba(0,0,0,0.5);
+}
+.msg.event .author { color: #ffcc4d; }
+.msg.event .text { color: #ffe9b8; }
+.event-quote {
+  margin-top: 6px;
+  opacity: 0.85;
+  color: #ffe9b8;
+}
+.event-sticker {
+  display: block;
+  margin-top: 6px;
+  max-height: 56px;
+}

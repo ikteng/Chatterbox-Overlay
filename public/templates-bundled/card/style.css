@@ -1,18 +1,9 @@
-html, body {
-  margin: 0;
-  background: transparent;
-  overflow: hidden;
-  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+body {
+  font-family: "Inter", -apple-system, Segoe UI, Roboto, sans-serif;
 }
 #feed {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
   padding: 10px;
   gap: 5px;
-  box-sizing: border-box;
   --bubble-font-size: 20px;
 }
 .msg {
@@ -22,11 +13,12 @@ html, body {
   animation: slidein 0.25s ease-out;
   max-width: 100%;
   word-wrap: break-word;
-  background: rgba(22, 23, 28, 0.82);
+  background: linear-gradient(135deg, rgba(28, 29, 36, 0.86), rgba(20, 21, 26, 0.86));
+  border: 1px solid rgba(255,255,255,0.05);
   border-left: 4px solid var(--author-color, #7c5cff);
-  border-radius: 3px;
-  padding: 5px 10px 5px 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  border-radius: 5px;
+  padding: 6px 11px 6px 9px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 @keyframes slidein {
   from { opacity: 0; transform: translateY(12px); }
@@ -80,15 +72,21 @@ html, body {
   border-radius: 4px;
   margin-right: 6px;
 }
-body.name-on-top .msg {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.msg.event {
+  border-left: 4px solid #ffcc4d;
+  background: linear-gradient(135deg, rgba(70, 54, 12, 0.88), rgba(50, 38, 8, 0.88));
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
-body.name-on-top .meta {
-  display: flex;
-  align-items: center;
+.msg.event .author { color: #ffcc4d; }
+.msg.event .text { font-weight: 700; }
+.event-quote {
+  margin-top: 3px;
+  font-weight: 400;
+  font-style: italic;
+  opacity: 0.85;
 }
-body.name-on-top .text {
+.event-sticker {
   display: block;
+  margin-top: 4px;
+  max-height: 64px;
 }

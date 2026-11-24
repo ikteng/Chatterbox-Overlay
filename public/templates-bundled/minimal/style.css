@@ -1,18 +1,9 @@
-html, body {
-  margin: 0;
-  background: transparent;
-  overflow: hidden;
-  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+body {
+  font-family: "Work Sans", -apple-system, Segoe UI, Roboto, sans-serif;
 }
 #feed {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
   padding: 10px;
   gap: 8px;
-  box-sizing: border-box;
   --bubble-text: #fff;
   --bubble-font-size: 20px;
 }
@@ -20,12 +11,12 @@ html, body {
   font-size: 22px;
   line-height: 1.35;
   color: var(--bubble-text);
-  animation: slidein 0.25s ease-out;
+  animation: slidein 0.3s cubic-bezier(.2,.8,.3,1);
   max-width: 100%;
   word-wrap: break-word;
   background: transparent;
   padding: 0 4px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.6);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.7);
 }
 @keyframes slidein {
   from { opacity: 0; transform: translateY(12px); }
@@ -76,15 +67,16 @@ html, body {
   border-radius: 5px;
   margin-right: 6px;
 }
-body.name-on-top .msg {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.msg.event .author { color: #ffcc4d; }
+.msg.event .text { font-weight: 800; }
+.event-quote {
+  margin-top: 2px;
+  font-weight: 400;
+  font-style: italic;
+  opacity: 0.85;
 }
-body.name-on-top .meta {
-  display: flex;
-  align-items: center;
-}
-body.name-on-top .text {
+.event-sticker {
   display: block;
+  margin-top: 4px;
+  max-height: 64px;
 }

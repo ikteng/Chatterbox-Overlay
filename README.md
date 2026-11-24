@@ -4,14 +4,16 @@ Free, local, unified chat overlay for YouTube and Twitch live streams — no API
 
 ## How it works
 
-- **YouTube**: scrapes the public `live_chat` page and polls YouTube's internal continuation endpoint (same data the embedded chat iframe uses).
-- **Twitch**: connects anonymously to Twitch IRC over WebSocket (`justinfan` guest login) — Twitch officially allows this for read-only chat.
+- **YouTube**: scrapes the public `live_chat` page and polls YouTube's internal continuation endpoint (same data the embedded chat iframe uses), honoring its low-latency "invalidation" hint to poll again almost immediately when new activity is pending.
+- **Twitch**: connects anonymously to Twitch IRC over WebSocket (`justinfan` guest login) — Twitch officially allows this for read-only chat, so messages arrive the instant Twitch sends them (no polling).
+
+Both platforms also surface non-text chat events — Twitch subs/resubs/gift subs/raids (`USERNOTICE`), YouTube memberships/Super Stickers/gift memberships — as a distinct event stream alongside regular chat messages.
 
 Both normalize into one message format and stream over a local WebSocket to:
 - a **control panel** (`control.html`) to connect/disconnect each platform and watch the unified log
 - an **OBS overlay** — a transparent browser-source page you drop into OBS.
 
-The overlay's look comes from a **template**: a self-contained HTML/CSS/JS package, OneComme-style. Four templates ship built in (Pill, Classic, Minimal, Terminal), and you can import your own as a `.zip`.
+The overlay's look comes from a **template**: a self-contained HTML/CSS/JS package, OneComme-style. Nine templates ship built in (Pill, Classic, Minimal, Terminal, Card, Neon, Kawaii, Cyberpunk, Retro), and you can import your own as a `.zip`. Any of them can also switch to a **scrolling (Danmaku-style) display mode**, where messages fly across the screen bullet-comment style instead of stacking in a list.
 
 ## Setup
 
@@ -36,7 +38,7 @@ The packaged app (`dist/ChatterboxOverlay.exe`) opens its own native window via 
 
 The control panel (`control.html`) is organized into four tabs:
 - **Sources** — connect/disconnect YouTube and Twitch, with a live status dot and running message count per platform.
-- **Design** — pick a template from the gallery (or import your own `.zip`), with a live preview. Templates own their entire look — there's no separate color/bubble styling to configure.
+- **Design** — pick a template from the gallery (or import your own `.zip`), with a live preview. Templates own their entire look — there's no separate color/bubble styling to configure. Each card has a folder icon that reveals the template's files in your OS file explorer, for editing in your own editor/IDE.
 - **Overlay** — max messages and auto-fade settings, plus a one-click copy button for the overlay URL.
 - **Filters** — NG word/username lists.
 
@@ -49,9 +51,10 @@ A template is a folder (or `.zip`) containing:
 - `index.html` — the overlay markup, loaded directly into the overlay iframe/browser source
 - any `style.css`/`script.js`/assets it references itself
 
-`index.html` must load the shared host script (`<script src="/overlay/template-host.js"></script>`) before its own script. The host owns the WebSocket connection and the live-preview sample-message bridge, and calls two globals your template's own script defines:
+`index.html` must load the shared host script (`<script src="/overlay/template-host.js"></script>`) before its own script. The host owns the WebSocket connection and the live-preview sample-message bridge, and calls globals your template's own script defines:
 - `window.onConfigUpdate(cfg)` — called on load and whenever settings change; `cfg` is `{ max, lifetime }`
-- `window.onChatMessage(msg)` — called per chat message: `{ platform, id, author, message, messageParts, color, badge, isPaid, timestamp }`
+- `window.onChatMessage(msg)` — called per chat message: `{ platform, id, author, message, messageParts, color, badge, isPaid, amount, timestamp }`. `amount` is the Super Chat purchase amount text (e.g. "$5.00") when `isPaid` is true on YouTube; `null`/absent otherwise.
+- `window.onChatEvent(evt)` (optional) — called per platform event (Twitch subs/resubs/gift subs/raids, YouTube memberships/Super Stickers/gift memberships): `{ platform, eventType, id, author, message, messageParts, color, badge, systemMessage, isPaid, data, timestamp }`. `systemMessage` is a human-readable summary (e.g. "Alice subscribed for 5 months!"); `data` carries event-specific fields (sub months, gift counts, raid viewer count, sticker URL, etc.). Templates that don't define this hook simply won't render events — chat messages are unaffected.
 
 Zip it up (manifest.json and index.html at the zip root) and import it from the Design tab. Imported templates can be deleted from the gallery at any time (except the one currently selected).
 

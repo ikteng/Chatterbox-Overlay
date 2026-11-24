@@ -87,16 +87,57 @@
     <div class="tab-panel" data-tab="design">
       <div class="design-layout">
         <div class="design-col-controls">
-          <button class="btn-import-template" id="btn-import-template"><iconify-icon class="icon" icon="mdi:file-upload-outline"></iconify-icon><span class="btn-label">Import template (.zip)</span></button>
-          <input type="file" id="template-file-input" accept=".zip" style="display:none;" />
-
-          <div class="theme-gallery" id="theme-gallery"></div>
-
-          <div class="inline-opts" style="margin-bottom:10px;">
-            <input type="checkbox" id="opt-name-on-top" />
-            <span>Show name on its own line above the message</span>
+          <div class="design-section">
+            <div class="design-section-head">
+              <label class="option-group-label">Template</label>
+              <button class="btn-import-template" id="btn-import-template"><iconify-icon class="icon" icon="mdi:file-upload-outline"></iconify-icon><span class="btn-label">Import .zip</span></button>
+              <input type="file" id="template-file-input" accept=".zip" style="display:none;" />
+            </div>
+            <div class="theme-gallery" id="theme-gallery"></div>
           </div>
 
+          <div class="design-section">
+            <label class="option-group-label">Display mode</label>
+            <div class="option-gallery" id="display-mode-gallery">
+              <button class="option-card active" data-value="stacked" id="opt-mode-stacked">
+                <iconify-icon class="option-card-icon" icon="mdi:view-list"></iconify-icon>
+                <span class="option-card-body">
+                  <span class="option-card-name">Stacked</span>
+                  <span class="option-card-desc">Messages pile up in a list</span>
+                </span>
+              </button>
+              <button class="option-card" data-value="scroll" id="opt-mode-scroll">
+                <iconify-icon class="option-card-icon" icon="mdi:chat-processing-outline"></iconify-icon>
+                <span class="option-card-body">
+                  <span class="option-card-name">Danmaku</span>
+                  <span class="option-card-desc">Bullets fly across the screen</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="design-section">
+            <label class="option-group-label">Name &amp; text layout</label>
+            <p class="design-section-note" id="name-layout-note" hidden>Not used in Danmaku mode — bullets always show the name inline.</p>
+            <div class="option-gallery" id="name-layout-gallery">
+              <button class="option-card active" data-value="inline" id="opt-layout-inline">
+                <iconify-icon class="option-card-icon" icon="mdi:format-horizontal-align-left"></iconify-icon>
+                <span class="option-card-body">
+                  <span class="option-card-name">Inline</span>
+                  <span class="option-card-desc">Name and message on one line</span>
+                </span>
+              </button>
+              <button class="option-card" data-value="top" id="opt-layout-top">
+                <iconify-icon class="option-card-icon" icon="mdi:view-headline"></iconify-icon>
+                <span class="option-card-body">
+                  <span class="option-card-name">Name on top</span>
+                  <span class="option-card-desc">Name on its own line above</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
           <div class="save-note" id="save-note-design"></div>
         </div>
 

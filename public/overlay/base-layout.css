@@ -1,0 +1,49 @@
+/* Shared structural layout for the bundled templates. Controls how the feed
+   and .msg bubbles are POSITIONED on screen for each display mode ("stacked"
+   vs "scroll", toggled by base-template.js via body classes). Themes only
+   style how a .msg LOOKS (colors, fonts, padding, shape) in their own
+   style.css, loaded after this file so theme rules can still override. */
+html, body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+#feed {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-sizing: border-box;
+}
+body.display-scroll #feed {
+  position: relative;
+  display: block;
+  padding: 0;
+}
+body.display-scroll .msg {
+  position: absolute;
+  top: 0;
+  left: 100vw;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+  /* Themes' enter/exit keyframes animate `transform` for the stacked list;
+     in scroll mode base-template.js drives `transform` itself via an inline
+     transition, and the two fighting over the same property is what breaks
+     the bullet's motion. */
+  animation: none;
+}
+body.name-on-top .msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+body.name-on-top .meta {
+  display: flex;
+  align-items: center;
+}
+body.name-on-top .text {
+  display: block;
+}

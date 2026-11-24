@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import subprocess
 import sys
 import zipfile
 from io import BytesIO
@@ -129,3 +130,17 @@ def delete_template(template_id):
     if not os.path.isdir(folder):
         raise ValueError("Template not found")
     shutil.rmtree(folder)
+
+
+def reveal_in_explorer(template_id):
+    if not template_id or any(c in template_id for c in ("/", "\\", "..")):
+        raise ValueError("Invalid template id")
+    folder = os.path.join(TEMPLATES_DIR, template_id)
+    if not os.path.isdir(folder):
+        raise ValueError("Template not found")
+    if sys.platform == "win32":
+        subprocess.Popen(["explorer", os.path.normpath(folder)])
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", folder])
+    else:
+        subprocess.Popen(["xdg-open", folder])

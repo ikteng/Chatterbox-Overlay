@@ -15,6 +15,10 @@ function dispatchMessage(msg) {
   if (typeof window.onChatMessage === 'function') window.onChatMessage(msg);
 }
 
+function dispatchEvent(evt) {
+  if (typeof window.onChatEvent === 'function') window.onChatEvent(evt);
+}
+
 async function loadConfig() {
   try {
     const res = await fetch('/api/settings');
@@ -31,6 +35,7 @@ function connectWs() {
   ws.onmessage = (ev) => {
     const data = JSON.parse(ev.data);
     if (data.type === 'chat') dispatchMessage(data.message);
+    else if (data.type === 'event') dispatchEvent(data.event);
     else if (data.type === 'settings') { cfg = { ...cfg, ...data.overlay }; dispatchConfig(); }
   };
   ws.onclose = () => setTimeout(connectWs, 2000);
@@ -47,6 +52,7 @@ if (isPreview) {
   // Embedded by the control panel's preview iframe — no real chat connection,
   // just a sandbox the panel can push settings/sample messages into.
   window.previewMessage = (msg) => dispatchMessage(msg);
+  window.previewEvent = (evt) => dispatchEvent(evt);
   dispatchConfig();
 } else {
   loadConfig().then(connectWs);

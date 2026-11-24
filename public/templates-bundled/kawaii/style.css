@@ -1,0 +1,99 @@
+body {
+  font-family: "Fredoka", "ZCOOL KuaiLe", sans-serif;
+}
+#feed {
+  padding: 12px;
+  gap: 8px;
+  --bubble-font-size: 19px;
+}
+.msg {
+  position: relative;
+  font-size: var(--bubble-font-size);
+  line-height: 1.4;
+  color: #4a2340;
+  animation: popin 0.3s cubic-bezier(.34,1.56,.64,1);
+  max-width: 100%;
+  word-wrap: break-word;
+  background: linear-gradient(135deg, #ffd3e8, #ffbfdd);
+  border: 2px solid #ff8fc4;
+  border-radius: 20px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 0 #ff8fc4, 0 2px 8px rgba(0,0,0,0.18);
+}
+@keyframes popin {
+  from { opacity: 0; transform: translateY(14px) scale(0.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.msg.fade-out {
+  animation: fadeout 0.5s ease forwards;
+}
+@keyframes fadeout {
+  to { opacity: 0; transform: translateY(-8px) scale(0.92); }
+}
+.meta {
+  display: inline-flex;
+  align-items: center;
+}
+.time {
+  display: none;
+}
+.plat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 4px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.plat svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.plat.youtube { background: #ff8fb3; color: #fff; }
+.plat.twitch { background: #c9a3ff; color: #fff; }
+.author {
+  font-weight: 700;
+  margin-right: 4px;
+  color: var(--author-color, #ff6fa8);
+}
+.author::after { content: " ♡"; }
+.text { color: #5a3a52; }
+.chat-emote {
+  height: 1.3em;
+  vertical-align: middle;
+  margin: -3px 2px;
+}
+.badge-paid {
+  background: #ffd36e;
+  color: #6b4400;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-right: 6px;
+}
+body.name-on-top .author::after {
+  content: "";
+}
+.msg.event {
+  background: linear-gradient(135deg, #ffe4a3, #ffd166);
+  border-color: #f0a500;
+  box-shadow: 0 2px 0 #f0a500, 0 2px 8px rgba(0,0,0,0.18);
+}
+.msg.event .author { color: #c77f00; }
+.msg.event .author::after { content: " ★"; }
+.msg.event .text { font-weight: 700; color: #6b4400; }
+.event-quote {
+  margin-top: 4px;
+  font-style: italic;
+  opacity: 0.85;
+  color: #6b4400;
+}
+.event-sticker {
+  display: block;
+  margin-top: 4px;
+  max-height: 64px;
+  border-radius: 10px;
+}

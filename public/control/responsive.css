@@ -10,6 +10,9 @@
       height: 50vh;
     }
     .chat-dock-bar { left: auto; right: 12px; width: auto; justify-content: center; }
+
+    .design-section-head { flex-wrap: wrap; }
+    .preview-frame-wrap { min-height: 320px; }
   }
 
   @media (max-width: 480px) {
@@ -26,4 +29,11 @@
     }
     .row { flex-wrap: wrap; }
     .topbar h1 { font-size: 13px; }
+
+    .theme-gallery,
+    .option-gallery { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .theme-card-btn,
+    .option-card { min-height: 76px; padding: 12px 6px 10px; }
+    .theme-card-icon,
+    .option-card-icon { font-size: 24px; }
   }

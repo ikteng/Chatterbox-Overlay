@@ -9,7 +9,34 @@ const btnImportTemplate = document.getElementById('btn-import-template');
 const templateFileInput = document.getElementById('template-file-input');
 const optMax = document.getElementById('opt-max');
 const optLifetime = document.getElementById('opt-lifetime');
-const optNameOnTop = document.getElementById('opt-name-on-top');
+const optModeStacked = document.getElementById('opt-mode-stacked');
+const optModeScroll = document.getElementById('opt-mode-scroll');
+const optLayoutInline = document.getElementById('opt-layout-inline');
+const optLayoutTop = document.getElementById('opt-layout-top');
+const nameLayoutGallery = document.getElementById('name-layout-gallery');
+const nameLayoutNote = document.getElementById('name-layout-note');
+let displayMode = 'stacked';
+let nameOnTop = false;
+
+function setDisplayMode(mode) {
+  displayMode = mode === 'scroll' ? 'scroll' : 'stacked';
+  optModeStacked.classList.toggle('active', displayMode === 'stacked');
+  optModeScroll.classList.toggle('active', displayMode === 'scroll');
+  // Danmaku bullets always show the name inline — the layout choice has no
+  // effect in that mode, so disable it instead of leaving a selection that
+  // silently stops doing anything (see base-template.js's onConfigUpdate).
+  nameLayoutGallery.classList.toggle('is-disabled', displayMode === 'scroll');
+  nameLayoutNote.hidden = displayMode !== 'scroll';
+}
+function setNameLayout(top) {
+  nameOnTop = !!top;
+  optLayoutInline.classList.toggle('active', !nameOnTop);
+  optLayoutTop.classList.toggle('active', nameOnTop);
+}
+optModeStacked.addEventListener('click', () => { setDisplayMode('stacked'); pushPreview(); });
+optModeScroll.addEventListener('click', () => { setDisplayMode('scroll'); pushPreview(); });
+optLayoutInline.addEventListener('click', () => { setNameLayout(false); pushPreview(); });
+optLayoutTop.addEventListener('click', () => { setNameLayout(true); pushPreview(); });
 const optNgWords = document.getElementById('opt-ngwords');
 const optNgUsers = document.getElementById('opt-ngusers');
 const saveNote = document.getElementById('save-note');
@@ -131,7 +158,8 @@ function currentOverlaySettings() {
     templateId: currentTemplateId,
     max: parseInt(optMax.value, 10) || 20,
     lifetime: parseInt(optLifetime.value, 10) || 0,
-    nameOnTop: optNameOnTop.checked,
+    nameOnTop: nameOnTop,
+    displayMode: displayMode,
   };
 }
 
@@ -234,7 +262,7 @@ if (liveFrame) {
   });
 }
 
-[optMax, optLifetime, optNameOnTop].forEach((el) => {
+[optMax, optLifetime].forEach((el) => {
   el.addEventListener('input', pushPreview);
   el.addEventListener('change', pushPreview);
 });
@@ -248,7 +276,8 @@ async function loadSettings() {
   currentTemplateId = o.templateId || 'pill';
   optMax.value = o.max != null ? o.max : 20;
   optLifetime.value = o.lifetime != null ? o.lifetime : 0;
-  optNameOnTop.checked = !!o.nameOnTop;
+  setNameLayout(!!o.nameOnTop);
+  setDisplayMode(o.displayMode === 'scroll' ? 'scroll' : 'stacked');
 
   await loadTemplates();
   rebuildOverlayLink();
