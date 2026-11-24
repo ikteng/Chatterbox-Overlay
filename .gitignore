@@ -1,2 +1,5 @@
-node_modules/
 settings.json
+dist/
+build/
+.venv/
+__pycache__/
