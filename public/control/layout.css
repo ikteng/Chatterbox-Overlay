@@ -197,7 +197,8 @@
     width: 100%;
     max-width: 760px;
   }
-  .main > .tab-panel[data-tab="design"] {
+  .main > .tab-panel[data-tab="overlay"],
+  .main > .tab-panel[data-tab="alerts"] {
     max-width: 1120px;
   }
 

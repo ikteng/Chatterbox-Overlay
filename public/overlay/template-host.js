@@ -31,14 +31,11 @@ async function loadConfig() {
 }
 
 function connectWs() {
-  const ws = new WebSocket(`ws://${location.host}/ws`);
-  ws.onmessage = (ev) => {
-    const data = JSON.parse(ev.data);
+  connectReconnectingWs((data) => {
     if (data.type === 'chat') dispatchMessage(data.message);
     else if (data.type === 'event') dispatchEvent(data.event);
     else if (data.type === 'settings') { cfg = { ...cfg, ...data.overlay }; dispatchConfig(); }
-  };
-  ws.onclose = () => setTimeout(connectWs, 2000);
+  });
 }
 
 // Exposed in both modes so the control panel can push the currently-selected

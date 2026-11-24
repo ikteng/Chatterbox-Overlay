@@ -37,8 +37,8 @@
     <nav class="tabs">
       <span class="tabs-label">Menu</span>
       <button class="tab-btn active" data-tab="sources"><iconify-icon class="icon" icon="mdi:access-point"></iconify-icon><span class="btn-label">Sources</span></button>
-      <button class="tab-btn" data-tab="design"><iconify-icon class="icon" icon="mdi:palette-swatch"></iconify-icon><span class="btn-label">Design</span></button>
-      <button class="tab-btn" data-tab="overlay"><iconify-icon class="icon" icon="mdi:monitor-screenshot"></iconify-icon><span class="btn-label">Overlay</span></button>
+      <button class="tab-btn" data-tab="overlay"><iconify-icon class="icon" icon="mdi:monitor-screenshot"></iconify-icon><span class="btn-label">Chat</span></button>
+      <button class="tab-btn" data-tab="alerts"><iconify-icon class="icon" icon="mdi:bell-ring-outline"></iconify-icon><span class="btn-label">Alerts</span></button>
       <button class="tab-btn" data-tab="filters"><iconify-icon class="icon" icon="mdi:filter-variant"></iconify-icon><span class="btn-label">Filters</span></button>
     </nav>
   </div>
@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <div class="tab-panel" data-tab="design">
+    <div class="tab-panel" data-tab="overlay">
       <div class="design-layout">
         <div class="design-col-controls">
           <div class="design-section">
@@ -137,8 +137,25 @@
             </div>
           </div>
 
+          <div class="settings-card">
+            <label>Max messages shown</label>
+            <input type="text" id="opt-max" value="20" />
+
+            <label>Auto-fade after (ms, 0 = never)</label>
+            <input type="text" id="opt-lifetime" value="0" />
+          </div>
+
           <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
-          <div class="save-note" id="save-note-design"></div>
+          <div class="save-note" id="save-note"></div>
+
+          <div class="links">
+            <div style="margin-bottom:6px;"><strong>OBS chat overlay (Browser Source):</strong></div>
+            <div class="link-row">
+              <a href="#" target="_blank" id="overlay-link"></a>
+              <button class="btn-copy" id="btn-copy-link"><iconify-icon class="icon" icon="mdi:content-copy"></iconify-icon><span class="btn-label">Copy</span></button>
+            </div>
+            <div style="margin-top:8px; color: var(--muted);">Add as a Browser Source in OBS. Settings are saved to the server, so this link also works without any query params — just save above.</div>
+          </div>
         </div>
 
         <div class="design-col-preview">
@@ -150,33 +167,89 @@
       </div>
     </div>
 
-    <div class="tab-panel" data-tab="overlay">
-      <div class="settings-card">
-        <h3>Overlay settings</h3>
+    <div class="tab-panel" data-tab="alerts">
+      <div class="design-layout">
+        <div class="design-col-controls">
+          <div class="design-section">
+            <label class="option-group-label">Template</label>
+            <div class="theme-gallery" id="alert-theme-gallery"></div>
+          </div>
 
-        <label>Max messages shown</label>
-        <input type="text" id="opt-max" value="20" />
+          <div class="design-section">
+            <label class="option-group-label">Icon &amp; text layout</label>
+            <div class="option-gallery" id="alert-layout-gallery">
+              <button class="option-card active" data-value="side" id="opt-alert-layout-side">
+                <iconify-icon class="option-card-icon" icon="mdi:format-horizontal-align-left"></iconify-icon>
+                <span class="option-card-body">
+                  <span class="option-card-name">Icon beside text</span>
+                  <span class="option-card-desc">Icon to the left, text to the right</span>
+                </span>
+              </button>
+              <button class="option-card" data-value="stacked" id="opt-alert-layout-stacked">
+                <iconify-icon class="option-card-icon" icon="mdi:view-agenda-outline"></iconify-icon>
+                <span class="option-card-body">
+                  <span class="option-card-name">Icon above text</span>
+                  <span class="option-card-desc">Icon centered above the text</span>
+                </span>
+              </button>
+              <button class="option-card" data-value="none" id="opt-alert-layout-none">
+                <iconify-icon class="option-card-icon" icon="mdi:format-text"></iconify-icon>
+                <span class="option-card-body">
+                  <span class="option-card-name">No icon</span>
+                  <span class="option-card-desc">Text only, no icon shown</span>
+                </span>
+              </button>
+            </div>
+          </div>
 
-        <label>Auto-fade after (ms, 0 = never)</label>
-        <input type="text" id="opt-lifetime" value="0" />
+          <div class="settings-card">
+            <h3>Alert box</h3>
+            <p class="design-section-note">Pops up a toast for subs, resubs, gift subs, raids, memberships, Super Stickers and gift memberships. Add it as its own Browser Source in OBS.</p>
 
-        <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
-        <div class="save-note" id="save-note"></div>
-      </div>
+            <label class="option-toggle-row">
+              <input type="checkbox" id="opt-alerts-enabled" checked />
+              <span>Enabled</span>
+            </label>
 
-      <div class="links">
-        <div style="margin-bottom:6px;"><strong>OBS overlay (Browser Source):</strong></div>
-        <div class="link-row">
-          <a href="#" target="_blank" id="overlay-link"></a>
-          <button class="btn-copy" id="btn-copy-link"><iconify-icon class="icon" icon="mdi:content-copy"></iconify-icon><span class="btn-label">Copy</span></button>
+            <label>Display duration (ms)</label>
+            <input type="text" id="opt-alerts-duration" value="6000" />
+
+            <label class="option-toggle-row">
+              <input type="checkbox" id="opt-alerts-sound" checked />
+              <span>Play sound</span>
+            </label>
+
+            <label>Sound volume</label>
+            <input type="range" id="opt-alerts-volume" min="0" max="1" step="0.05" value="0.5" />
+          </div>
+
+          <button class="btn-save"><iconify-icon class="icon" icon="mdi:content-save"></iconify-icon><span class="btn-label">Save settings</span></button>
+          <div class="save-note" id="save-note-alerts"></div>
+
+          <div class="links">
+            <div style="margin-bottom:6px;"><strong>OBS alert box (Browser Source):</strong></div>
+            <div class="link-row">
+              <a href="#" target="_blank" id="alert-link"></a>
+              <button class="btn-copy" id="btn-copy-alert-link"><iconify-icon class="icon" icon="mdi:content-copy"></iconify-icon><span class="btn-label">Copy</span></button>
+            </div>
+            <div style="margin-top:8px; color: var(--muted);">Add as a separate Browser Source from the chat overlay so it can be positioned independently.</div>
+          </div>
         </div>
-        <div style="margin-top:8px; color: var(--muted);">Add as a Browser Source in OBS. Settings are saved to the server, so this link also works without any query params — just save above.</div>
+
+        <div class="design-col-preview">
+          <label class="design-preview-label">Live preview</label>
+          <div class="preview-frame-wrap">
+            <iframe class="preview-frame" id="alert-preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+          </div>
+          <button class="btn-import-template" id="btn-test-alert" style="margin-top:10px; width:100%; justify-content:center;"><iconify-icon class="icon" icon="mdi:bell-ring"></iconify-icon><span class="btn-label">Test alert</span></button>
+        </div>
       </div>
     </div>
 
     <div class="tab-panel" data-tab="filters">
       <div class="settings-card">
         <h3>Filters (NG words / users)</h3>
+        <p class="design-section-note">Applies everywhere a message or event could show up — the chat overlay and the alert box both skip anything blocked here.</p>
         <label>Blocked words (one per line, substring match)</label>
         <textarea id="opt-ngwords"></textarea>
         <div class="row" style="margin-top:6px;">
@@ -220,8 +293,11 @@
     <span>Live Chat</span>
   </button>
 
+<script src="/shared/ws-client.js"></script>
 <script src="tabs.js"></script>
+<script src="control-helpers.js"></script>
 <script src="overlay-settings.js"></script>
+<script src="alert-settings.js"></script>
 <script src="filters.js"></script>
 <script src="platform-cards.js"></script>
 <script src="websocket.js"></script>

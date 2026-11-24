@@ -1,0 +1,110 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  font-family: 'Baloo 2', 'Segoe UI', sans-serif;
+}
+
+#alert-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.alert-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 32px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(20, 20, 32, 0.92), rgba(40, 20, 60, 0.92));
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45), 0 0 60px var(--alert-glow, rgba(150, 90, 255, 0.45));
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.6) translateY(30px);
+  transition: opacity 0.35s cubic-bezier(.2,1.2,.4,1), transform 0.45s cubic-bezier(.2,1.4,.3,1);
+}
+
+body[data-alert-layout="stacked"] .alert-card {
+  flex-direction: column;
+  text-align: center;
+}
+body[data-alert-layout="stacked"] .alert-body {
+  text-align: center;
+  align-items: center;
+}
+
+body[data-alert-show-icon="false"] .alert-icon {
+  display: none;
+}
+
+.alert-card.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.alert-card.hide {
+  opacity: 0;
+  transform: scale(0.85) translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.alert-icon {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: var(--alert-glow, rgba(150, 90, 255, 0.45));
+}
+
+.alert-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.alert-title {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.alert-main {
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.alert-main .alert-author {
+  color: var(--alert-accent, #ffd56b);
+}
+
+.alert-sub {
+  font-weight: 600;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.alert-sticker {
+  flex: 0 0 auto;
+  max-width: 48px;
+  max-height: 48px;
+  border-radius: 8px;
+}

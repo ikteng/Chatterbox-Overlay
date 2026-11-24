@@ -26,6 +26,7 @@
     flex: 1;
   }
   .preview-frame-wrap {
+    position: relative;
     width: 100%;
     height: 100%;
     min-height: 420px;
@@ -41,8 +42,8 @@
     background: transparent;
     color-scheme: normal;
   }
-
-  .main > .tab-panel[data-tab="design"] {
+  .main > .tab-panel[data-tab="overlay"],
+  .main > .tab-panel[data-tab="alerts"] {
     flex: 1;
     min-height: 0;
   }
@@ -83,7 +84,8 @@
     color: var(--muted-soft);
   }
   @media (max-width: 860px) {
-    .main > .tab-panel[data-tab="design"] { flex: none; }
+    .main > .tab-panel[data-tab="overlay"],
+    .main > .tab-panel[data-tab="alerts"] { flex: none; }
     .design-layout { grid-template-columns: 1fr; flex: none; }
     .design-col-controls { height: auto; overflow-y: visible; }
     .design-col-preview { position: static; height: auto; }
@@ -93,6 +95,7 @@
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-md);
     padding: 14px;
+    margin-top: 6px;
   }
   .settings-card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 600; }
   .settings-card label {
@@ -105,3 +108,26 @@
   .settings-card label:first-of-type { margin-top: 0; }
   .btn-save { background: var(--accent); color: white; width: 100%; margin-top: 12px; }
   .save-note { font-size: 11.5px; color: var(--green); margin-top: 8px; min-height: 14px; font-weight: 600; }
+
+  .settings-card .design-section-note {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+  .option-toggle-row {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px !important;
+    font-weight: 500;
+    color: var(--text) !important;
+    margin: 12px 0 5px !important;
+    cursor: pointer;
+  }
+  .option-toggle-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }

@@ -37,10 +37,10 @@ optModeStacked.addEventListener('click', () => { setDisplayMode('stacked'); push
 optModeScroll.addEventListener('click', () => { setDisplayMode('scroll'); pushPreview(); });
 optLayoutInline.addEventListener('click', () => { setNameLayout(false); pushPreview(); });
 optLayoutTop.addEventListener('click', () => { setNameLayout(true); pushPreview(); });
+
 const optNgWords = document.getElementById('opt-ngwords');
 const optNgUsers = document.getElementById('opt-ngusers');
 const saveNote = document.getElementById('save-note');
-const saveNoteDesign = document.getElementById('save-note-design');
 const saveNoteFilters = document.getElementById('save-note-filters');
 
 let currentTemplateId = 'pill';
@@ -51,52 +51,42 @@ function templatePath(id) {
 }
 
 function renderGallery() {
-  themeGallery.innerHTML = '';
-  availableTemplates.forEach((tpl) => {
-    const card = document.createElement('div');
-    card.className = 'theme-card';
-
-    const btn = document.createElement('button');
-    btn.className = 'theme-card-btn' + (tpl.id === currentTemplateId ? ' active' : '');
-    btn.dataset.templateId = tpl.id;
-    btn.innerHTML = `
-      <iconify-icon class="theme-card-icon" icon="${tpl.icon || 'mdi:monitor-screenshot'}"></iconify-icon>
-      <span class="theme-card-name">${tpl.name}</span>
-    `;
-    btn.addEventListener('click', () => {
+  renderThemeGallery(
+    themeGallery,
+    availableTemplates,
+    (tpl) => tpl.id === currentTemplateId,
+    (tpl) => {
       currentTemplateId = tpl.id;
       renderGallery();
       loadPreviewFrame();
       pushPreview();
-    });
-    card.appendChild(btn);
-
-    const reveal = document.createElement('button');
-    reveal.className = 'theme-card-reveal';
-    reveal.innerHTML = '<iconify-icon icon="mdi:folder-open-outline"></iconify-icon>';
-    reveal.title = 'Reveal template folder';
-    reveal.addEventListener('click', async (ev) => {
-      ev.stopPropagation();
-      await fetch(`/api/templates/${encodeURIComponent(tpl.id)}/reveal`, { method: 'POST' });
-    });
-    card.appendChild(reveal);
-
-    if (tpl.id !== currentTemplateId) {
-      const del = document.createElement('button');
-      del.className = 'theme-card-delete';
-      del.innerHTML = '<iconify-icon icon="mdi:close"></iconify-icon>';
-      del.title = 'Delete template';
-      del.addEventListener('click', async (ev) => {
+    },
+    (tpl, card) => {
+      const reveal = document.createElement('button');
+      reveal.className = 'theme-card-reveal';
+      reveal.innerHTML = '<iconify-icon icon="mdi:folder-open-outline"></iconify-icon>';
+      reveal.title = 'Reveal template folder';
+      reveal.addEventListener('click', async (ev) => {
         ev.stopPropagation();
-        if (!confirm(`Delete template "${tpl.name}"?`)) return;
-        await fetch(`/api/templates/${encodeURIComponent(tpl.id)}`, { method: 'DELETE' });
-        await loadTemplates();
+        await fetch(`/api/templates/${encodeURIComponent(tpl.id)}/reveal`, { method: 'POST' });
       });
-      card.appendChild(del);
-    }
+      card.appendChild(reveal);
 
-    themeGallery.appendChild(card);
-  });
+      if (tpl.id !== currentTemplateId) {
+        const del = document.createElement('button');
+        del.className = 'theme-card-delete';
+        del.innerHTML = '<iconify-icon icon="mdi:close"></iconify-icon>';
+        del.title = 'Delete template';
+        del.addEventListener('click', async (ev) => {
+          ev.stopPropagation();
+          if (!confirm(`Delete template "${tpl.name}"?`)) return;
+          await fetch(`/api/templates/${encodeURIComponent(tpl.id)}`, { method: 'DELETE' });
+          await loadTemplates();
+        });
+        card.appendChild(del);
+      }
+    }
+  );
 }
 
 async function loadTemplates() {
@@ -112,8 +102,8 @@ btnImportTemplate.addEventListener('click', () => templateFileInput.click());
 async function importTemplateFile(file) {
   if (!file) return;
   if (!file.name.toLowerCase().endsWith('.zip')) {
-    saveNoteDesign.textContent = 'Template packages must be a .zip file';
-    setTimeout(() => { saveNoteDesign.textContent = ''; }, 3000);
+    saveNote.textContent = 'Template packages must be a .zip file';
+    setTimeout(() => { saveNote.textContent = ''; }, 3000);
     return;
   }
   const formData = new FormData();
@@ -121,8 +111,8 @@ async function importTemplateFile(file) {
   const res = await fetch('/api/templates', { method: 'POST', body: formData });
   const data = await res.json();
   if (data.error) {
-    saveNoteDesign.textContent = data.error;
-    setTimeout(() => { saveNoteDesign.textContent = ''; }, 3000);
+    saveNote.textContent = data.error;
+    setTimeout(() => { saveNote.textContent = ''; }, 3000);
     return;
   }
   currentTemplateId = data.id;
@@ -181,38 +171,12 @@ function loadLiveFrame() {
 }
 
 function rebuildOverlayLink() {
-  // Saved settings are the source of truth for the plain link; query params
-  // are only for per-browser-source overrides, so the base link stays clean.
-  // If this page itself was opened as a local file (e.g. double-clicked rather
-  // than served), location.origin isn't a usable http(s) origin — fall back to
-  // the server's default address so the link OBS needs is always valid.
-  const origin = /^https?:$/.test(location.protocol) ? location.origin : 'http://localhost:4848';
-  const url = origin + templatePath(currentTemplateId);
+  const url = buildOverlayUrl(templatePath(currentTemplateId));
   overlayLink.href = url;
   overlayLink.textContent = url;
 }
 
-btnCopyLink.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(overlayLink.href);
-  } catch {
-    // clipboard API unavailable (e.g. insecure context) — fall back to selecting the link text
-    const range = document.createRange();
-    range.selectNode(overlayLink);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-  }
-  const copyLabel = btnCopyLink.querySelector('.btn-label');
-  const copyIcon = btnCopyLink.querySelector('.icon');
-  copyLabel.textContent = 'Copied!';
-  copyIcon.setAttribute('icon', 'mdi:check');
-  btnCopyLink.classList.add('copied');
-  setTimeout(() => {
-    copyLabel.textContent = 'Copy';
-    copyIcon.setAttribute('icon', 'mdi:content-copy');
-    btnCopyLink.classList.remove('copied');
-  }, 1500);
-});
+wireCopyLinkButton(btnCopyLink, () => overlayLink.href);
 
 // ---- preview sample messages (pushes fake messages into the preview iframe's overlay) ----
 const SAMPLE_MESSAGES = [
@@ -233,13 +197,7 @@ function pushSampleMessage() {
 
 // Auto-loop: continuously feeds sample messages into the preview so the OBS
 // overlay preview always shows something moving, without needing clicks.
-let previewLoopTimer = null;
-function startPreviewLoop() {
-  if (previewLoopTimer) clearInterval(previewLoopTimer);
-  sampleIndex = 0;
-  pushSampleMessage();
-  previewLoopTimer = setInterval(pushSampleMessage, 2800);
-}
+const startSamplePreviewLoop = startPreviewLoop(() => { sampleIndex = 0; pushSampleMessage(); }, 2800);
 
 previewFrame.addEventListener('load', () => {
   // Push the panel's current unsaved overlay settings into the preview so
@@ -248,7 +206,7 @@ previewFrame.addEventListener('load', () => {
   if (frameWin && typeof frameWin.applyPreviewConfig === 'function') {
     frameWin.applyPreviewConfig(currentOverlaySettings());
   }
-  startPreviewLoop();
+  startSamplePreviewLoop();
 });
 
 if (liveFrame) {
@@ -292,7 +250,11 @@ async function saveSettings(note) {
   await fetch('/api/settings', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ngWords, ngUsers, overlay: currentOverlaySettings() })
+    body: JSON.stringify({
+      ngWords,
+      ngUsers,
+      overlay: currentOverlaySettings(),
+    })
   });
   note.textContent = 'Saved.';
   setTimeout(() => { note.textContent = ''; }, 2000);
@@ -301,5 +263,6 @@ async function saveSettings(note) {
 }
 
 document.querySelectorAll('.btn-save').forEach(btn => {
+  if (btn.closest('.tab-panel[data-tab="alerts"]')) return; // alert-settings.js owns this tab's save button
   btn.addEventListener('click', () => saveSettings(btn.closest('.tab-panel').querySelector('.save-note')));
 });

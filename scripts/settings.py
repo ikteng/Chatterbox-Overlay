@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import sys
@@ -15,6 +16,23 @@ DEFAULT_SETTINGS = {
         "nameOnTop": False,
         "displayMode": "stacked",
     },
+    "alerts": {
+        "enabled": True,
+        "duration": 6000,
+        "sound": True,
+        "volume": 0.5,
+        "theme": "pill",
+        "layout": "side",
+        "showIcon": True,
+    },
+}
+
+ALERT_LAYOUTS = {"side", "stacked"}
+ALERT_THEMES = {"pill", "classic", "minimal", "terminal", "card", "neon", "kawaii", "cyberpunk", "retro"}
+
+ALERT_EVENT_TYPES = {
+    "sub", "resub", "subgift", "submysterygift", "giftpaidupgrade", "anongiftpaidupgrade",
+    "raid", "membership", "giftMembershipPurchase", "giftMembershipRedeemed", "paidSticker",
 }
 
 
@@ -44,17 +62,47 @@ def sanitize_overlay(o):
     }
 
 
+def sanitize_alerts(a):
+    a = a or {}
+    base = DEFAULT_SETTINGS["alerts"]
+    duration = _as_float(a.get("duration"))
+    volume = _as_float(a.get("volume"))
+    types = a.get("types")
+    layout = a.get("layout")
+    theme = a.get("theme")
+    sanitized = {
+        "enabled": bool(a.get("enabled", base["enabled"])),
+        "duration": max(1500, min(30000, int(duration))) if duration is not None else base["duration"],
+        "sound": bool(a.get("sound", base["sound"])),
+        "volume": max(0.0, min(1.0, volume)) if volume is not None else base["volume"],
+        "theme": theme if theme in ALERT_THEMES else base["theme"],
+        "layout": layout if layout in ALERT_LAYOUTS else base["layout"],
+        "showIcon": bool(a.get("showIcon", base["showIcon"])),
+    }
+    if isinstance(types, list):
+        filtered = [t for t in types if t in ALERT_EVENT_TYPES]
+        if filtered:
+            sanitized["types"] = filtered
+    return sanitized
+
+
+def _merge_settings(source, base_ngwords, base_ngusers, base_overlay, base_alerts):
+    source = source or {}
+    return {
+        "ngWords": source.get("ngWords") if isinstance(source.get("ngWords"), list) else base_ngwords,
+        "ngUsers": source.get("ngUsers") if isinstance(source.get("ngUsers"), list) else base_ngusers,
+        "overlay": sanitize_overlay({**base_overlay, **source["overlay"]}) if source.get("overlay") else sanitize_overlay(base_overlay),
+        "alerts": sanitize_alerts({**base_alerts, **source["alerts"]}) if source.get("alerts") else sanitize_alerts(base_alerts),
+    }
+
+
 def load():
     try:
         with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
             parsed = json.load(f)
-        return {
-            "ngWords": parsed.get("ngWords") if isinstance(parsed.get("ngWords"), list) else [],
-            "ngUsers": parsed.get("ngUsers") if isinstance(parsed.get("ngUsers"), list) else [],
-            "overlay": sanitize_overlay(parsed.get("overlay")),
-        }
+        return _merge_settings(parsed, [], [], DEFAULT_SETTINGS["overlay"], DEFAULT_SETTINGS["alerts"])
     except Exception:
-        defaults = json.loads(json.dumps(DEFAULT_SETTINGS))
+        defaults = copy.deepcopy(DEFAULT_SETTINGS)
         save(defaults)
         return defaults
 
@@ -73,12 +121,7 @@ def get():
 
 def update(partial):
     global current
-    partial = partial or {}
-    current = {
-        "ngWords": partial.get("ngWords") if isinstance(partial.get("ngWords"), list) else current["ngWords"],
-        "ngUsers": partial.get("ngUsers") if isinstance(partial.get("ngUsers"), list) else current["ngUsers"],
-        "overlay": sanitize_overlay({**current["overlay"], **partial["overlay"]}) if partial.get("overlay") else current["overlay"],
-    }
+    current = _merge_settings(partial, current["ngWords"], current["ngUsers"], current["overlay"], current["alerts"])
     save(current)
     return current
 

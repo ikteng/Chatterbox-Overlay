@@ -196,34 +196,12 @@ class TwitchAdapter:
                         parsed = parse_irc_line(line)
                         if not parsed:
                             continue
+                        payload = {**parsed, "platform": "twitch", "timestamp": int(time.time() * 1000)}
+                        payload.pop("type", None)
                         if parsed["type"] == "message":
-                            self.on_message({
-                                "platform": "twitch",
-                                "id": parsed["id"],
-                                "author": parsed["author"],
-                                "message": parsed["message"],
-                                "messageParts": parsed["messageParts"],
-                                "color": parsed["color"],
-                                "badge": parsed["badge"],
-                                "isPaid": parsed["isPaid"],
-                                "amount": parsed["amount"],
-                                "timestamp": int(time.time() * 1000),
-                            })
+                            self.on_message(payload)
                         elif parsed["type"] == "event" and self.on_event:
-                            self.on_event({
-                                "platform": "twitch",
-                                "id": parsed["id"],
-                                "eventType": parsed["eventType"],
-                                "author": parsed["author"],
-                                "message": parsed["message"],
-                                "messageParts": parsed["messageParts"],
-                                "color": parsed["color"],
-                                "badge": parsed["badge"],
-                                "systemMessage": parsed["systemMessage"],
-                                "isPaid": parsed["isPaid"],
-                                "data": parsed["data"],
-                                "timestamp": int(time.time() * 1000),
-                            })
+                            self.on_event(payload)
         self.ws = None
 
     def stop(self):

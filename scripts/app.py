@@ -34,9 +34,9 @@ message_counts = {}
 
 def broadcast(msg_type, payload):
     data = json.dumps({"type": msg_type, **payload})
-    for ws in list(ws_clients):
-        if not ws.closed:
-            asyncio.ensure_future(ws.send_str(data))
+    targets = [ws for ws in ws_clients if not ws.closed]
+    if targets:
+        asyncio.ensure_future(asyncio.gather(*(ws.send_str(data) for ws in targets), return_exceptions=True))
 
 
 async def start_adapter(platform, url):
@@ -105,8 +105,9 @@ async def handle_get_settings(request):
 
 async def handle_post_settings(request):
     body = await request.json()
-    updated = settings.update(body or {})
-    broadcast("settings", {"overlay": updated["overlay"]})
+    loop = asyncio.get_event_loop()
+    updated = await loop.run_in_executor(None, settings.update, body or {})
+    broadcast("settings", {"overlay": updated["overlay"], "alerts": updated["alerts"]})
     return web.json_response(updated)
 
 
